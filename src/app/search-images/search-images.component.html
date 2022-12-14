@@ -1,12 +1,51 @@
 <div class="container">
+    <br><br>
     <div class="form-group">
         <div class="header" >
             <img class="logo" src="./../../assets/images/2021-12-26-image.png" alt="Flickr logo">
         </div>
-        <div class="form-input">
-            <div class="input-group">
-                <input type="Search me" class="form-control" placeholder="Search" (keyup)="search($event)">
-                <input type="number" class="form-control" placeholder="Number of images" (keyup)="setNumberOfImages($event)" [defaultValue]="this.numberOfImages">
+        <div class="form-input" style="border: solid #989fc7 3px; padding: 9px; box-shadow: 3px 3px 5px #d0c5d5; background: #eef0f9;">
+            <h2>Recherchez des images</h2>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <input type="Search me" class="form-control" placeholder="mot clé" (keyup)="search($event)">
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <input type="number" class="form-control" placeholder="Number of images" (keyup)="setNumberOfImages($event)" [defaultValue]="this.numberOfImages">
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-4">
+                    <!--button type="button" class="btn btn-primary" >Rechercher</button-->
+                    <input type="number" class="form-control" placeholder="Taille de l'image" (keyup)="search($event)">
+                </div>
+            </div> <br>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <Label for="datemin">Date min</Label>
+                    <input type="date" class="form-control" placeholder="Date min d'upload" (keyup)="search($event)" id="datemin">
+
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <Label for="datemax">Date max</Label>
+                    <input type="date" class="form-control" placeholder="Date max d'upload" (keyup)="search($event)" id="datemax">
+                </div >
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <label for="type">Type d'affichage</label>
+                    <select class=" form-control">
+                        <option></option>
+                        <option>Liste</option>
+                        <option>Slider</option>
+                    </select>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-3">
+                    <Label for="hashtag">Hashtag</Label>
+                    <input type="text" class="form-control" placeholder="Hashtag" (keyup)="search($event)" id="hashtag">
+                </div >
+            </div> <br>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                    <button type="button" class="btn btn-primary" >Rechercher</button>
+
+                </div>
             </div>
         </div>
     </div>
