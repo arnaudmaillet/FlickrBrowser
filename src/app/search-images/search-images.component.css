@@ -1,0 +1,58 @@
+.form-group {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;
+    justify-content: space-between;
+}
+
+.form-group .form-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.header {
+    border-radius: 3px;
+    box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+.logo {
+    width: 400px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.card-img{
+    object-fit: cover;
+    width: 100%;
+    height: 250px;
+    border-radius: 3px;
+}
+
+.card-header {
+    height: 70px;
+}
+
+.card-body {
+    display: flex;
+    align-items: center;
+}
+
+.example-card {
+    height: 450px;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.example-card:hover {
+    box-shadow: 0 0 11px rgba(33,33,33,.2);
+    cursor: pointer;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}

@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="form-group">
+        <div class="header" >
+            <img class="logo" src="./../../assets/images/2021-12-26-image.png" alt="Flickr logo">
+        </div>
+        <div class="form-input">
+            <div class="input-group">
+                <input type="Search me" class="form-control" placeholder="Search" (keyup)="search($event)">
+                <input type="number" class="form-control" placeholder="Number of images" (keyup)="setNumberOfImages($event)" [defaultValue]="this.numberOfImages">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-3 p-3" *ngFor="let image of images">
+            <mat-card class="example-card">
+                <mat-card-header class="card-header">
+                  <div mat-card-avatar class="example-header-image">
+                    <img class= "avatar" src="{{image.owner.avatar}}" title="{{image.owner.avatar}}/">
+                  </div>
+                  <mat-card-title>{{image.title}}</mat-card-title>
+                  <mat-card-subtitle>by {{image.owner.username}}</mat-card-subtitle>
+                </mat-card-header>
+                <img class="card-img" src="{{image.url}}" title="{{image.title}}">
+                <mat-card-content class="card-body">
+                  <p>{{image.description}}</p>
+                </mat-card-content>
+            </mat-card>  
+        </div>
+    </div>
+
+</div>
