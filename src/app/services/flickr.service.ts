@@ -31,7 +31,7 @@ export interface FlickrResponse {
 enum FlickrMethod {
   SEARCH = 'flickr.photos.search',
   GET_INFO = 'flickr.photos.getInfo',
-  GET_POPULAR = 'flickr.photos.getPopular'
+  GET_RECENT = 'flickr.photos.getRecent',
 }
 
 @Injectable({
@@ -40,16 +40,16 @@ enum FlickrMethod {
 
 export class FlickrService {
 
-  private apiKey: string = `api_key=${environment.flickr.api_key}`;
-  private format: string = 'format=json&nojsoncallback=1';
+  private _apiUrl: string = 'https://www.flickr.com/services/rest/?method=';
+  private _apiKey: string = `api_key=${environment.flickr.api_key}`;
+  private _format: string = 'format=json&nojsoncallback=1';
 
   constructor(private http: HttpClient) { }
 
-  getPopularPhotos(perPage: number): Observable<Object> {
-    const url: string = 'https://www.flickr.com/services/rest/?method=';
-    const args = `${this.apiKey}&${this.format}&per_page=${perPage}`;
+  searchPhotos(searchText: string, perPage: number, sort: string): Observable<Object> {
+    const args = `${this._apiKey}&text=${searchText}&${this._format}&sort=${sort}&per_page=${perPage}`;
 
-    return this.http.get<FlickrResponse>(`${url}${FlickrMethod.GET_POPULAR}&${args}`)
+    return this.http.get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}&${args}`)
                     .pipe(map(async(res: FlickrResponse) => {
 
       const photos: any[] = [];
@@ -60,19 +60,20 @@ export class FlickrService {
         });
       });
 
+      console.log(photos);
       return photos;
+
     }));
   }
 
-  searchPhotos(searchText: string, perPage: number): Observable<Object> {
-    const url: string = 'https://www.flickr.com/services/rest/?method=';
-    const args = `${this.apiKey}&text=${searchText}&${this.format}&per_page=${perPage}`;
+  getRecentPhotos(perPage: number): Observable<Object> {
+    const args = `${this._apiKey}&${this._format}&per_page=${perPage}`;
 
-    return this.http.get<FlickrResponse>(`${url}${FlickrMethod.SEARCH}&${args}`)
+    return this.http.get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.GET_RECENT}&${args}`)
                     .pipe(map(async(res: FlickrResponse) => {
 
       const photos: any[] = [];
-
+      console.log(res);
       res.photos.photo.forEach(async photo => {
         await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(async(res: any) => {
           photos.push(this.instanciatePhoto(photo, res));
@@ -86,9 +87,8 @@ export class FlickrService {
   }
 
   private getPhotoInfo(photoId: string, perPage: number): Observable<Object> {
-    const url: string = `https://www.flickr.com/services/rest/?method=flickr.photos.getInfo&per_page=${perPage}`;
-    const args: string = `api_key=${environment.flickr.api_key}&photo_id=${photoId}&format=json&nojsoncallback=1`;
-    return this.http.get(`${url}&${args}`);
+    const args: string = `${this._apiKey}&photo_id=${photoId}&per_page=${perPage}&format=json&nojsoncallback=1`;
+    return this.http.get(`${this._apiUrl}${FlickrMethod.GET_INFO}&${args}`);
   }
 
   private getDescription(photo: any): string {
