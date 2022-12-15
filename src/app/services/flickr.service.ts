@@ -35,55 +35,63 @@ enum FlickrMethod {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class FlickrService {
-
   private _apiUrl: string = 'https://www.flickr.com/services/rest/?method=';
   private _apiKey: string = `api_key=${environment.flickr.api_key}`;
   private _format: string = 'format=json&nojsoncallback=1';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  searchPhotos(searchText: string, perPage: number, sort: string): Observable<Object> {
+  searchPhotos(
+    searchText: string,
+    perPage: number,
+    sort: string
+  ): Observable<Object> {
     const args = `${this._apiKey}&text=${searchText}&${this._format}&sort=${sort}&per_page=${perPage}`;
 
-    return this.http.get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}&${args}`)
-                    .pipe(map(async(res: FlickrResponse) => {
+    return this.http
+      .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}&${args}`)
+      .pipe(
+        map(async (res: FlickrResponse) => {
+          const photos: any[] = [];
+          console.log(res);
+          res.photos.photo.forEach(async (photo) => {
+            await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
+              async (res: any) => {
+                photos.push(this.instanciatePhoto(photo, res));
+              }
+            );
+          });
 
-      const photos: any[] = [];
-      console.log(res);
-      res.photos.photo.forEach(async photo => {
-        await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(async(res: any) => {
-          photos.push(this.instanciatePhoto(photo, res));
-        });
-      });
-
-      console.log(photos);
-      return photos;
-
-    }));
+          console.log(photos);
+          return photos;
+        })
+      );
   }
 
   getRecentPhotos(perPage: number): Observable<Object> {
     const args = `${this._apiKey}&${this._format}&per_page=${perPage}`;
 
-    return this.http.get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.GET_RECENT}&${args}`)
-                    .pipe(map(async(res: FlickrResponse) => {
+    return this.http
+      .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.GET_RECENT}&${args}`)
+      .pipe(
+        map(async (res: FlickrResponse) => {
+          const photos: any[] = [];
+          console.log(res);
+          res.photos.photo.forEach(async (photo) => {
+            await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
+              async (res: any) => {
+                photos.push(this.instanciatePhoto(photo, res));
+              }
+            );
+          });
 
-      const photos: any[] = [];
-      console.log(res);
-      res.photos.photo.forEach(async photo => {
-        await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(async(res: any) => {
-          photos.push(this.instanciatePhoto(photo, res));
-        });
-      });
-
-      console.log(photos);
-      return photos;
-
-    }));
+          console.log(photos);
+          return photos;
+        })
+      );
   }
 
   private getPhotoInfo(photoId: string, perPage: number): Observable<Object> {
@@ -107,7 +115,10 @@ export class FlickrService {
     let avatarUrl: string = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${res.photo.owner.nsid}.jpg`;
     return {
       url: `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`,
-      title: photo.title.length > 20 ? photo.title.substring(0, 20) + ' ...' : photo.title,
+      title:
+        photo.title.length > 20
+          ? photo.title.substring(0, 20) + ' ...'
+          : photo.title,
       description: this.getDescription(res.photo),
       info: res,
       id: photo.id,
@@ -118,8 +129,8 @@ export class FlickrService {
         nsid: res.photo.owner.nsid,
         username: res.photo.owner.username,
         name: res.photo.owner.realname,
-        avatar: avatarUrl
-      }
+        avatar: avatarUrl,
+      },
     };
   }
 

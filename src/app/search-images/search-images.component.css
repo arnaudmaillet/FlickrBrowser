@@ -1,76 +1,75 @@
 .container {
-    padding: 20px 0 0 0;
+  padding: 20px 0 0 0;
 }
 
 .form-input {
-    display: flex;
-    flex-direction: column;
-    border-radius: 5px;
-    box-shadow: 0 0 11px rgba(33,33,33,.2);
-    margin: 20px 0 0 0;
-    padding: 1rem;
-    background-color: #424245;
-    color: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
+  margin: 20px 0 0 0;
+  padding: 1rem;
+  background-color: #424245;
+  color: white;
 }
 
 .form-input .button-container {
-    display: flex;
-    justify-content: center;
-    margin: 15px 0 0 0;
+  display: flex;
+  justify-content: center;
+  margin: 15px 0 0 0;
 }
 
-.form-input .button-container button{
-    max-width: 200px;
+.form-input .button-container button {
+  max-width: 200px;
 }
 
 .row > .col-12 {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 .header {
-    border-radius: 5px;
-    box-shadow: 0 0 11px rgba(33,33,33,.2);
+  border-radius: 5px;
+  box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
 }
 
 .logo {
-    width: 300px;
-    height: 150px;
-    margin: auto;
+  width: 300px;
+  height: 150px;
+  margin: auto;
 }
 
-
-.card-img{
-    object-fit: cover;
-    width: 100%;
-    height: 250px;
-    border-radius: 3px;
+.card-img {
+  object-fit: cover;
+  width: 100%;
+  height: 250px;
+  border-radius: 3px;
 }
 
 .card-header {
-    height: 70px;
+  height: 70px;
 }
 
 .card-body {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .example-card {
-    height: 450px;
-    max-width: 300px;
-    display: flex;
-    flex-direction: column;
-    transition: box-shadow 0.3s;
+  height: 450px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.3s;
 }
 
 .example-card:hover {
-    box-shadow: 0 0 11px rgba(33,33,33,.2);
-    cursor: pointer;
-    transition: box-shadow 0.3s;
+  box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
+  cursor: pointer;
+  transition: box-shadow 0.3s;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }

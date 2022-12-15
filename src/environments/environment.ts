@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   flickr: {
-    api_key: '9c20441b0ccf0d3aff37f13a4b4c71b0'
-  }
+    api_key: '9c20441b0ccf0d3aff37f13a4b4c71b0',
+  },
 };
 
 /*

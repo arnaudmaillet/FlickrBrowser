@@ -1,80 +1,126 @@
 <div class="container">
-    <div class="row">
-        <div class="form-group col-sm-12 col-md-4 col-lg-3 p-3">
-            <div class="header" >
-                <img class="logo" src="./../../assets/images/2021-12-26-image.png" alt="Flickr logo">
-            </div>
-            <form class="form-input" [formGroup]="form" (ngSubmit)="onSubmit()">
-                <h2>Recherchez des images</h2>
-                <div class="row">
-                    <div class="col-12">
-                        <label for="keyword">Mot clé</label>
-                        <input type="Search me" class="form-control" formControlName="keyword" placeholder="ex: Porsche">
-                    </div>
-                    <div class="col-12">
-                        <label for="number">Nombre d'images</label>
-                        <input type="number" class="form-control" (keyup)="setNumberOfImages($event)" [defaultValue]="this.numberOfImages" formControlName="numberOfImages">
-                    </div>
-                    <div class="col-12">
-                        <label for="datemin">Date min</label>
-                        <input type="date" class="form-control" placeholder="Date min d'upload" id="datemin" formControlName="startDate" [defaultValue]="startDate">
-    
-                    </div>
-                    <div class="col-12">
-                        <label for="datemax">Date max</label>
-                        <input type="date" class="form-control" placeholder="Date max d'upload" id="datemax" formControlName="endDate" [defaultValue]="endDate">
-                    </div >
-                    <div class="col-12">
-                        <label for="sort">Trier par</label>
-                        <select class=" form-control">
-                            <option value="most-recent">Les plus récentes</option>
-                            <option value="most-popular">Les plus populaires</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <label for="display">affichage</label>
-                        <select class=" form-control">
-                            <option>Liste</option>
-                            <option>Slider</option>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <Label for="hashtag">Hashtag</Label>
-                        <input type="text" class="form-control" placeholder="Hashtag" id="hashtag">
-                    </div >
-                    <div class="col-12">
-                        <label for="size">Taille</label>
-                        <select class=" form-control">
-                            <option> < 300ko</option>
-                            <option> < 1Mo</option>
-                            <option> < 5Mo</option>
-                            <option> < 10Mo</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row button-container">
-                    <button type="submit" class="btn btn-primary">Rechercher</button>
-                </div>
-            </form>
+  <div class="row">
+    <div class="form-group col-sm-12 col-md-4 col-lg-3 p-3">
+      <div class="header">
+        <img
+          class="logo"
+          src="./../../assets/images/logo.png"
+          alt="Flickr logo"
+        />
+      </div>
+      <form class="form-input" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <h2>Recherchez des images</h2>
+        <div class="row">
+          <div class="col-12">
+            <label for="keyword">Mot clé</label>
+            <input
+              type="Search me"
+              class="form-control"
+              formControlName="keyword"
+              placeholder="ex: Porsche"
+            />
+          </div>
+          <div class="col-12">
+            <label for="number">Nombre d'images</label>
+            <input
+              type="number"
+              class="form-control"
+              (keyup)="setNumberOfImages($event)"
+              [defaultValue]="this.numberOfImages"
+              formControlName="numberOfImages"
+            />
+          </div>
+          <div class="col-12">
+            <label for="datemin">Date min</label>
+            <input
+              type="date"
+              class="form-control"
+              placeholder="Date min d'upload"
+              id="datemin"
+              formControlName="startDate"
+              [defaultValue]="startDate"
+            />
+          </div>
+          <div class="col-12">
+            <label for="datemax">Date max</label>
+            <input
+              type="date"
+              class="form-control"
+              placeholder="Date max d'upload"
+              id="datemax"
+              formControlName="endDate"
+              [defaultValue]="endDate"
+            />
+          </div>
+          <div class="col-12">
+            <label for="sort">Trier par</label>
+            <select class="form-control">
+              <option value="most-recent">Les plus récentes</option>
+              <option value="most-popular">Les plus populaires</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="display">affichage</label>
+            <select class="form-control">
+              <option>Liste</option>
+              <option>Slider</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <Label for="hashtag">Hashtag</Label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Hashtag"
+              id="hashtag"
+            />
+          </div>
+          <div class="col-12">
+            <label for="size">Taille</label>
+            <select class="form-control">
+              <option>< 300ko</option>
+              <option>< 1Mo</option>
+              <option>< 5Mo</option>
+              <option>< 10Mo</option>
+            </select>
+          </div>
         </div>
-        <div class="image col-sm-12 col-md-8 col-lg-9">
-            <div class="row">
-                <div class="col-sm-12 col-md-3 col-lg-4 p-3" *ngFor="let image of images">
-                    <mat-card class="example-card">
-                        <mat-card-header class="card-header">
-                          <div mat-card-avatar class="example-header-image">
-                            <img class= "avatar" src="{{image.owner.avatar}}" title="{{image.owner.avatar}}/">
-                          </div>
-                          <mat-card-title>{{image.title}}</mat-card-title>
-                          <mat-card-subtitle>by {{image.owner.username}}</mat-card-subtitle>
-                        </mat-card-header>
-                        <img class="card-img" src="{{image.url}}" title="{{image.title}}">
-                        <mat-card-content class="card-body">
-                          <p>{{image.description}}</p>
-                        </mat-card-content>
-                    </mat-card>  
-                </div>
-            </div>
+        <div class="row button-container">
+          <button type="submit" class="btn btn-primary">Rechercher</button>
         </div>
+      </form>
     </div>
+    <div class="image col-sm-12 col-md-8 col-lg-9">
+      <div class="row">
+        <div
+          class="col-sm-12 col-md-3 col-lg-4 p-3"
+          *ngFor="let image of images"
+        >
+          <mat-card class="example-card">
+            <mat-card-header class="card-header">
+              <div mat-card-avatar class="example-header-image">
+                <img
+                  class="avatar"
+                  src="{{ image.owner.avatar }}"
+                  title="{{ image.owner.avatar }}/"
+                />
+              </div>
+              <mat-card-title>{{ image.title }}</mat-card-title>
+              <mat-card-subtitle
+                >by {{ image.owner.username }}</mat-card-subtitle
+              >
+            </mat-card-header>
+            <img
+              class="card-img"
+              src="{{ image.url }}"
+              title="{{ image.title }}"
+            />
+            <mat-card-content class="card-body">
+              <p>{{ image.description }}</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

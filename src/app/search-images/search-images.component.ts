@@ -7,20 +7,19 @@ enum Sort {
   RELEVANCE = 'relevance',
   DATE_POSTED = 'date-posted-',
   DATE_TAKEN = 'date-taken-',
-  INTERESTINGNESS = 'interestingness-'
+  INTERESTINGNESS = 'interestingness-',
 }
 
 enum SortOrder {
   ASC = 'asc',
   DESC = 'desc',
-  NONE = ''
+  NONE = '',
 }
 @Component({
   selector: 'app-search-images',
   templateUrl: './search-images.component.html',
-  styleUrls: ['./search-images.component.css']
+  styleUrls: ['./search-images.component.css'],
 })
-
 export class SearchImagesComponent implements OnInit {
   private _keyword: string;
   private _numberOfImages: number;
@@ -31,7 +30,7 @@ export class SearchImagesComponent implements OnInit {
   private _sortOrder: SortOrder;
   public form: FormGroup;
 
-  constructor(private flickrService: FlickrService) { }
+  constructor(private flickrService: FlickrService) {}
 
   ngOnInit(): void {
     this._keyword = '';
@@ -80,13 +79,21 @@ export class SearchImagesComponent implements OnInit {
     if (this._sort === Sort.RELEVANCE) {
       this._sortOrder = SortOrder.NONE;
     }
-    await lastValueFrom(this.flickrService.searchPhotos(this._keyword, this._numberOfImages, `${this._sort}${this._sortOrder}`)).then((res: any) => {
+    await lastValueFrom(
+      this.flickrService.searchPhotos(
+        this._keyword,
+        this._numberOfImages,
+        `${this._sort}${this._sortOrder}`
+      )
+    ).then((res: any) => {
       this._images = res;
     });
   }
 
   async getRecentPhotos() {
-    await lastValueFrom(this.flickrService.getRecentPhotos(this._numberOfImages)).then((res: any) => {
+    await lastValueFrom(
+      this.flickrService.getRecentPhotos(this._numberOfImages)
+    ).then((res: any) => {
       this._images = res;
     });
   }
@@ -97,7 +104,7 @@ export class SearchImagesComponent implements OnInit {
     this.searchPhotos();
   }
 
-  onSubmit(){
+  onSubmit() {
     this._keyword = this.form.value.keyword;
     this._numberOfImages = this.form.value.numberOfImages;
     this._startDate = this.form.value.startDate;

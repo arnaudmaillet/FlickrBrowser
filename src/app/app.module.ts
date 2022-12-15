@@ -6,15 +6,12 @@ import { AppComponent } from './app.component';
 import { SearchImagesComponent } from './search-images/search-images.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatCardModule} from '@angular/material/card';
-import {MatButtonModule} from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SearchImagesComponent
-  ],
+  declarations: [AppComponent, SearchImagesComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -22,9 +19,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     BrowserAnimationsModule,
     MatCardModule,
     MatButtonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
