@@ -9,9 +9,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CardModalComponent } from './card-modal/card-modal.component';
+import { CardsImagesComponent } from './cards-images/cards-images.component';
 
 @NgModule({
-  declarations: [AppComponent, SearchImagesComponent],
+  declarations: [AppComponent, SearchImagesComponent, CardModalComponent, CardsImagesComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

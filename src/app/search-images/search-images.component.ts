@@ -3,6 +3,8 @@ import { lastValueFrom } from 'rxjs';
 import { FlickrService } from '../services/flickr.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
+import {CardsImagesComponent} from '../cards-images/cards-images.component';
+
 enum Sort {
   RELEVANCE = 'relevance',
   DATE_POSTED = 'date-posted-',
@@ -23,7 +25,7 @@ enum SortOrder {
 export class SearchImagesComponent implements OnInit {
   private _keyword: string;
   private _numberOfImages: number;
-  private _images: any[];
+  public _images: any[];
   private _startDate: Date;
   private _endDate: Date;
   private _sort: Sort;
@@ -110,7 +112,7 @@ export class SearchImagesComponent implements OnInit {
     this._startDate = this.form.value.startDate;
     this._endDate = this.form.value.endDate;
 
-    if (this._keyword.toLowerCase().includes('f40')) {
+    if (this._keyword.toLowerCase().includes('f50')) {
       this._keyword = 'twingo';
     }
     this._keyword.length > 0 ? this.searchPhotos() : this.getRecentPhotos();
