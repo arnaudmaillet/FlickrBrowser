@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpStatusCode } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { lastValueFrom, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -19,6 +19,8 @@ export interface FlickrPhoto {
   server: string;
   info: any;
   description: string;
+  date_posted: Date;
+  date_posted_formatted: string;
   owner: Owner;
 }
 
@@ -34,6 +36,12 @@ enum FlickrMethod {
   GET_RECENT = 'flickr.photos.getRecent',
 }
 
+enum SafeMode {
+  SAFE = 1,
+  MODERATE = 2,
+  RESTRICTED = 3
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -43,12 +51,13 @@ export class FlickrService {
   private _apiUrl: string = 'https://www.flickr.com/services/rest/?method=';
   private _apiKey: string = `api_key=${environment.flickr.api_key}`;
   private _format: string = 'format=json&nojsoncallback=1';
+  private _safe: SafeMode = SafeMode.SAFE;
 
   constructor(private http: HttpClient) { }
 
   searchPhotos(searchText: string, perPage: number, sort: string): Observable<Object> {
-    const args = `${this._apiKey}&text=${searchText}&${this._format}&sort=${sort}&per_page=${perPage}`;
-
+    const args = `${this._apiKey}&text=${searchText}&${this._format}&safe_search=${this._safe}&sort=${sort}&per_page=${perPage}`;
+    console.log(args);
     return this.http.get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}&${args}`)
                     .pipe(map(async(res: FlickrResponse) => {
 
@@ -59,7 +68,6 @@ export class FlickrService {
           photos.push(this.instanciatePhoto(photo, res));
         });
       });
-
       console.log(photos);
       return photos;
 
@@ -87,7 +95,7 @@ export class FlickrService {
   }
 
   private getPhotoInfo(photoId: string, perPage: number): Observable<Object> {
-    const args: string = `${this._apiKey}&photo_id=${photoId}&per_page=${perPage}&format=json&nojsoncallback=1`;
+    const args: string = `${this._apiKey}&photo_id=${photoId}&per_page=${perPage}&${this._format}`;
     return this.http.get(`${this._apiUrl}${FlickrMethod.GET_INFO}&${args}`);
   }
 
@@ -104,7 +112,6 @@ export class FlickrService {
   }
 
   private instanciatePhoto(photo: any, res: any): FlickrPhoto {
-    let avatarUrl: string = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${res.photo.owner.nsid}.jpg`;
     return {
       url: `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`,
       title: photo.title.length > 20 ? photo.title.substring(0, 20) + ' ...' : photo.title,
@@ -114,18 +121,14 @@ export class FlickrService {
       server: photo.server,
       secret: photo.secret,
       farm: photo.farm,
+      date_posted: new Date(Number(res.photo.dates.posted)),
+      date_posted_formatted: new Date(Number(res.photo.dates.posted)).toLocaleDateString(),
       owner: {
         nsid: res.photo.owner.nsid,
         username: res.photo.owner.username,
         name: res.photo.owner.realname,
-        avatar: avatarUrl
+        avatar: `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${res.photo.owner.nsid}.jpg`
       }
     };
   }
-
-  // private urlExists(url: string): boolean {
-  //   this.http.get(url, { observe: 'response', responseType: 'text' }).pipe(map(res => {
-  //     return res.status === HttpStatusCode.Ok;
-  //   }));
-  //}
 }

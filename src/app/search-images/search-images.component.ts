@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
+import { find, lastValueFrom } from 'rxjs';
 import { FlickrService } from '../services/flickr.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
 enum Sort {
   RELEVANCE = 'relevance',
-  DATE_POSTED = 'date-posted-',
-  DATE_TAKEN = 'date-taken-',
-  INTERESTINGNESS = 'interestingness-'
+  DATE_POSTED = 'date-posted-desc',
+  DATE_TAKEN = 'date-taken-desc',
+  INTERESTINGNESS = 'interestingness-desc'
 }
 
 enum SortOrder {
@@ -71,12 +71,12 @@ export class SearchImagesComponent implements OnInit {
     this._keyword = keyword;
   }
 
-  setNumberOfImages(event: any) {
+  public setNumberOfImages(event: any) {
     this._numberOfImages = event.target.value;
     this.searchPhotos();
   }
 
-  async searchPhotos() {
+  public async searchPhotos() {
     if (this._sort === Sort.RELEVANCE) {
       this._sortOrder = SortOrder.NONE;
     }
@@ -85,27 +85,47 @@ export class SearchImagesComponent implements OnInit {
     });
   }
 
-  async getRecentPhotos() {
+  private async getRecentPhotos() {
     await lastValueFrom(this.flickrService.getRecentPhotos(this._numberOfImages)).then((res: any) => {
       this._images = res;
     });
   }
 
-  setSort(event: any) {
+  public setSort(event: any) {
     this._sort = event.target.value;
-    console.log(this._sort);
     this.searchPhotos();
   }
 
-  onSubmit(){
+  public onSubmit(){
     this._keyword = this.form.value.keyword;
     this._numberOfImages = this.form.value.numberOfImages;
     this._startDate = this.form.value.startDate;
     this._endDate = this.form.value.endDate;
 
-    if (this._keyword.toLowerCase().includes('f40')) {
+    if (this._keyword.toLowerCase().includes('f') 
+      && this._keyword.toLowerCase().includes('4')
+      && this._keyword.toLowerCase().includes('0')) {
       this._keyword = 'twingo';
     }
     this._keyword.length > 0 ? this.searchPhotos() : this.getRecentPhotos();
+  }
+
+  public onChange(event) {
+    this._sort = this.findSort(event.target.value);
+    console.log(this._sort);
+    this.searchPhotos();
+  }
+
+  private findSort(sort: string): Sort {
+    switch (sort) {
+      case 'most-popular':
+        return Sort.INTERESTINGNESS;
+      case 'most-recent':
+        return Sort.DATE_POSTED;
+      case 'interestingness':
+        return Sort.INTERESTINGNESS;
+      default:
+        return Sort.RELEVANCE;
+    }
   }
 }
