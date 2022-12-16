@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { CardModalComponent } from '../card-modal/card-modal.component';
 
 @Component({
   selector: 'app-cards-images',
@@ -7,17 +9,16 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class CardsImagesComponent implements OnInit {
 
-  @Input() images_: any[] = [];
-
-  constructor() {}
+  @Input() images: any[] = [];
+  constructor(private matDialog: MatDialog) {}
 
   ngOnInit(): void {
+    
   }
 
-  onClick() {
-    // change open to true
-
+  openDialog(image: any){
+    this.matDialog.open(CardModalComponent, {
+      data: image
+    });
   }
-
-
 }

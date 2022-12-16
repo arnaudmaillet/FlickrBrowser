@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CardModalComponent } from './card-modal/card-modal.component';
 import { CardsImagesComponent } from './cards-images/cards-images.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [AppComponent, SearchImagesComponent, CardModalComponent, CardsImagesComponent],
@@ -22,6 +23,7 @@ import { CardsImagesComponent } from './cards-images/cards-images.component';
     MatCardModule,
     MatButtonModule,
     ReactiveFormsModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

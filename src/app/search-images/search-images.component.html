@@ -1,13 +1,6 @@
 <div class="container">
-  <div class="col-6 tri">
-    <label for="sort">Trier par :</label>
-    <select class="form-control">
-      <option value="most-recent" selected>Les plus récentes</option>
-      <option value="most-popular">Les plus populaires</option>
-    </select>
-  </div>
   <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-3 p-3">
+    <div class="col-sm-12 col-md-12 col-lg-3">
       <div class="header">
         <img
           class="logo"
@@ -91,28 +84,30 @@
         </div>
       </form>
     </div>
-    <div class="image col-sm-12 col-md-12 col-lg-9">
-      <div class="row">
-        <div class="col-sm-12 col-md-4 col-lg-4 p-3" *ngFor="let image of images">
-          <mat-card class="example-card">
-            <mat-card-header class="card-header">
-              <div mat-card-avatar class="example-header-image">
-                <img
-                  class="avatar"
-                  src="{{ image.owner.avatar }}"
-                  title="{{ image.owner.avatar }}/"
-                />
-              </div>
-              <mat-card-title>{{ image.title }}</mat-card-title>
-              <mat-card-subtitle>by {{ image.owner.username }}</mat-card-subtitle>
-            </mat-card-header>
-            <img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
-            <mat-card-content class="card-body">
-              <p>{{ image.description }}</p>
-            </mat-card-content>
-          </mat-card>
+    <div class="col-sm-12 col-md-12 col-lg-9 p-9">
+      <div class="tri">
+        <div class="btn-group">
+          <input checked type="radio" class="btn-check" name="options" id="radio1" autocomplete="off" value="date-posted-desc" (click)="sortPhotos($event)">
+          <label class="btn btn-outline-primary p-1" for="radio1">Les plus récentes</label>
+
+          <input type="radio" class="btn-check" name="options" id="radio2" autocomplete="off" value="date-posted-asc" (click)="sortPhotos($event)">
+          <label class="btn btn-outline-primary p-1" for="radio2">Les plus anciennes</label>
+      
+          <input type="radio" class="btn-check" name="options" id="radio3" autocomplete="off" value="interestingness-desc" (click)="sortPhotos($event)">
+          <label class="btn btn-outline-primary p-1" for="radio3">Les plus populaires</label>
+      
+          <input type="radio" class="btn-check" name="options" id="radio4" autocomplete="off" value="interestingness-asc" (click)="sortPhotos($event)">
+          <label class="btn btn-outline-primary p-1" for="radio4">Les moins populaires</label>
         </div>
       </div>
+      <!-- <div class="col-6 tri p-1 m-1">
+        <label for="sort">Trier par :</label>
+        <select class="form-control">
+          <option value="most-recent" selected>Les plus récentes</option>
+          <option value="most-popular">Les plus populaires</option>
+        </select>
+      </div> -->
+      <app-cards-images [images]="images"></app-cards-images>
     </div>
   </div>
 </div>
