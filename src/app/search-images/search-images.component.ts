@@ -3,20 +3,13 @@ import { lastValueFrom } from 'rxjs';
 import { FlickrService } from '../services/flickr.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
-import {CardsImagesComponent} from '../cards-images/cards-images.component';
-
 enum Sort {
-  RELEVANCE = 'relevance',
-  DATE_POSTED = 'date-posted-',
-  DATE_TAKEN = 'date-taken-',
-  INTERESTINGNESS = 'interestingness-',
+  DATE_POSTED_ASC = 'date-posted-asc',
+  DATE_POSTED_DESC = 'date-posted-desc',
+  INTERESTINGNESS_ASC = 'interestingness-asc',
+  INTERESTINGNESS_DESC = 'interestingness-desc',
 }
 
-enum SortOrder {
-  ASC = 'asc',
-  DESC = 'desc',
-  NONE = '',
-}
 @Component({
   selector: 'app-search-images',
   templateUrl: './search-images.component.html',
@@ -25,11 +18,10 @@ enum SortOrder {
 export class SearchImagesComponent implements OnInit {
   private _keyword: string;
   private _numberOfImages: number;
-  public _images: any[];
+  private _images: any[];
   private _startDate: Date;
   private _endDate: Date;
   private _sort: Sort;
-  private _sortOrder: SortOrder;
   public form: FormGroup;
 
   constructor(private flickrService: FlickrService) {}
@@ -37,8 +29,7 @@ export class SearchImagesComponent implements OnInit {
   ngOnInit(): void {
     this._keyword = '';
     this._numberOfImages = 100;
-    this._sort = Sort.RELEVANCE;
-    this._sortOrder = SortOrder.DESC;
+    this._sort = Sort.DATE_POSTED_DESC;
     this._images = [];
     this._startDate = new Date(1990, 1, 1);
     this._endDate = new Date();
@@ -77,22 +68,28 @@ export class SearchImagesComponent implements OnInit {
     this.searchPhotos();
   }
 
-  async searchPhotos() {
-    if (this._sort === Sort.RELEVANCE) {
-      this._sortOrder = SortOrder.NONE;
+  sortPhotos(event: any) {
+    this.updateSort(event.target.value);
+    if (this._keyword.length > 0) {
+      this.searchPhotos();
+    } else {
+      this.getRecentPhotos();
     }
+  }
+
+  private async searchPhotos() {
     await lastValueFrom(
       this.flickrService.searchPhotos(
         this._keyword,
         this._numberOfImages,
-        `${this._sort}${this._sortOrder}`
+        `${this._sort}`
       )
     ).then((res: any) => {
       this._images = res;
     });
   }
 
-  async getRecentPhotos() {
+  private async getRecentPhotos() {
     await lastValueFrom(
       this.flickrService.getRecentPhotos(this._numberOfImages)
     ).then((res: any) => {
@@ -100,10 +97,24 @@ export class SearchImagesComponent implements OnInit {
     });
   }
 
-  setSort(event: any) {
-    this._sort = event.target.value;
-    console.log(this._sort);
-    this.searchPhotos();
+  private updateSort(sort: string) {
+    switch (sort) {
+      case 'date-posted-asc':
+        this._sort = Sort.DATE_POSTED_ASC;
+        break;
+      case 'date-posted-desc':
+        this._sort = Sort.DATE_POSTED_DESC;
+        break;
+      case 'interestingness-asc':
+        this._sort = Sort.INTERESTINGNESS_ASC;
+        break;
+      case 'interestingness-desc':
+        this._sort = Sort.INTERESTINGNESS_DESC;
+        break;
+      default:
+        this._sort = Sort.DATE_POSTED_DESC;
+        break;
+    }
   }
 
   onSubmit() {
@@ -112,7 +123,7 @@ export class SearchImagesComponent implements OnInit {
     this._startDate = this.form.value.startDate;
     this._endDate = this.form.value.endDate;
 
-    if (this._keyword.toLowerCase().includes('f50')) {
+    if (this._keyword.toLowerCase().includes('f40')) {
       this._keyword = 'twingo';
     }
     this._keyword.length > 0 ? this.searchPhotos() : this.getRecentPhotos();

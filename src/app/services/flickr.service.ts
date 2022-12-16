@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpStatusCode } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { lastValueFrom, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -49,8 +49,8 @@ export class FlickrService {
     perPage: number,
     sort: string
   ): Observable<Object> {
-    const args = `${this._apiKey}&text=${searchText}&${this._format}&sort=${sort}&per_page=${perPage}`;
-
+    const args = `${this._apiKey}&text=${searchText}&sort=${sort}&per_page=${perPage}&${this._format}`;
+    console.log(args);
     return this.http
       .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}&${args}`)
       .pipe(
@@ -65,7 +65,7 @@ export class FlickrService {
             );
           });
 
-          console.log(photos);
+          //console.log(photos);
           return photos;
         })
       );
@@ -79,7 +79,7 @@ export class FlickrService {
       .pipe(
         map(async (res: FlickrResponse) => {
           const photos: any[] = [];
-          console.log(res);
+          //console.log(res);
           res.photos.photo.forEach(async (photo) => {
             await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
               async (res: any) => {
@@ -88,7 +88,7 @@ export class FlickrService {
             );
           });
 
-          console.log(photos);
+          //console.log(photos);
           return photos;
         })
       );
@@ -133,10 +133,4 @@ export class FlickrService {
       },
     };
   }
-
-  // private urlExists(url: string): boolean {
-  //   this.http.get(url, { observe: 'response', responseType: 'text' }).pipe(map(res => {
-  //     return res.status === HttpStatusCode.Ok;
-  //   }));
-  //}
 }
