@@ -41,26 +41,3 @@
   height: 100%;
   margin: auto;
 }
-
-.tri{
-  width:100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.tri label{
-  margin: auto 0;
-  padding: 0 10px;
-}
-
-.tri select{
-  width: auto;
-  height: auto;
-  color: #424245;
-  background-color: #ECECEC;
-  border: none;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: inset 0 0 5px rgba(33, 33, 33, 0.2);
-}

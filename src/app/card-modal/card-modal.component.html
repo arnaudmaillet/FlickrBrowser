@@ -1,18 +1,22 @@
+<!-- modal with title image description, owner close button -->
 
-<mat-card class="example-card">
-  <mat-card-header class="card-header">
-    <div mat-card-avatar class="example-header-image">
-      <img
-        class="avatar"
-        src="{{ image.owner.avatar }}"
-        title="{{ image.owner.avatar }}/"
-      />
-    </div>
-    <mat-card-title>{{ image.title }}</mat-card-title>
-    <mat-card-subtitle>by {{ image.owner.username }}</mat-card-subtitle>
-  </mat-card-header>
+<div class="modal-header">
+  <button
+    class="btn-close"
+    (click)="closeDialog()"
+  ></button>
+  <div class="example-header-image">
+    <img
+      class="avatar"
+      src="{{ image.owner.avatar }}"
+      title="{{ image.owner.avatar }}/"
+    />
+  </div>
+
+  <h5 class="modal-title" id="exampleModalLabel">{{ image.title }}</h5>
+</div>
+<div class="modal-body">
   <img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
-  <mat-card-content class="card-body">
-    <p>{{ image.description }}</p>
-  </mat-card-content>
-</mat-card>
+  <p class="owner">Photo by {{ image.owner.name }} as {{ image.owner.username }}</p>
+  <p class="description">{{ image.description }}</p>
+</div>

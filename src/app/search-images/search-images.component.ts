@@ -123,7 +123,7 @@ export class SearchImagesComponent implements OnInit {
     this._startDate = this.form.value.startDate;
     this._endDate = this.form.value.endDate;
 
-    if (this._keyword.toLowerCase().includes('f40')) {
+    if (this._keyword.toLowerCase().includes('f50')) {
       this._keyword = 'twingo';
     }
     this._keyword.length > 0 ? this.searchPhotos() : this.getRecentPhotos();
