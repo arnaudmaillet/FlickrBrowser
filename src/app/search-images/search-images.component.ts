@@ -10,6 +10,20 @@ enum Sort {
   INTERESTINGNESS_DESC = 'interestingness-desc',
 }
 
+enum Code_color {
+  RED = '0',
+  BROWN = '1',
+  ORANGE = '2',
+  PINK = '3',
+  YELLOW_GREEN = '4',
+  YELLOW = '5',
+  GREEN = '6',
+  GREEN_BLUE = '7',
+}
+  
+  
+
+
 @Component({
   selector: 'app-search-images',
   templateUrl: './search-images.component.html',
@@ -23,6 +37,8 @@ export class SearchImagesComponent implements OnInit {
   private _endDate: Date;
   private _sort: Sort;
   public form: FormGroup;
+  private color: Code_color;
+  private isColorEnabled: boolean;
 
   constructor(private flickrService: FlickrService) {}
 
@@ -33,6 +49,8 @@ export class SearchImagesComponent implements OnInit {
     this._images = [];
     this._startDate = new Date(1990, 1, 1);
     this._endDate = new Date();
+    this.color = Code_color.RED;
+    this.isColorEnabled = false;
     this.form = new FormGroup({
       keyword: new FormControl(this._keyword),
       numberOfImages: new FormControl(this._numberOfImages),
@@ -82,7 +100,7 @@ export class SearchImagesComponent implements OnInit {
       this.flickrService.searchPhotos(
         this._keyword,
         this._numberOfImages,
-        `${this._sort}`
+        `${this._sort}`,
       )
     ).then((res: any) => {
       this._images = res;
@@ -127,5 +145,28 @@ export class SearchImagesComponent implements OnInit {
       this._keyword = 'twingo';
     }
     this._keyword.length > 0 ? this.searchPhotos() : this.getRecentPhotos();
+  }
+
+  private findColor(color: string) {
+    switch (color) {
+      case 'Red':
+        return Code_color.RED;
+      case 'Brown':
+        return Code_color.BROWN;
+      case 'Orange':
+        return Code_color.ORANGE;
+      case 'Pink':
+        return Code_color.PINK;
+      case 'Yellow Green':
+        return Code_color.YELLOW_GREEN;
+      case 'Yellow':
+        return Code_color.YELLOW;
+      case 'Green':
+        return Code_color.GREEN;
+      case 'Green Blue':
+        return Code_color.GREEN_BLUE;
+      default:
+        return Code_color.RED;
+    }
   }
 }

@@ -49,7 +49,7 @@ export class FlickrService {
     perPage: number,
     sort: string
   ): Observable<Object> {
-    const args = `${this._apiKey}&text=${searchText}&sort=${sort}&per_page=${perPage}&${this._format}`;
+    const args = `${this._apiKey}&text=${searchText}&color_codes=e&sort=${sort}&per_page=${perPage}&${this._format}`;
     console.log(args);
     return this.http
       .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}&${args}`)
