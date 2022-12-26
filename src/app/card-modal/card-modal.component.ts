@@ -17,6 +17,27 @@ export class CardModalComponent implements OnInit {
     console.log(this.image);
   }
 
+  getDateToString(date: string){
+    let yourDate = new Date(parseInt(date) * 1000)
+    return yourDate.toISOString().split('T')[0]
+  }
+
+  isDescriptionDisabled(description: string){
+    if (description.length > 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  isCommentDisabled(comments: any | undefined){
+    if (comments === undefined) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   closeDialog(){
     this.matDialog.closeAll();
   }

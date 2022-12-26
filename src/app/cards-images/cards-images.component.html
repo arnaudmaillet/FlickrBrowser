@@ -7,17 +7,17 @@
             <div mat-card-avatar class="example-header-image">
               <img
                 class="avatar"
-                src="{{ image.owner.avatar }}"
-                title="{{ image.owner.avatar }}/"
+                src="{{ image.ownerInfos.avatar }}"
+                title="{{ image.ownerInfos.avatar }}/"
               />
             </div>
-            <mat-card-title>{{ image.title }}</mat-card-title>
-            <mat-card-subtitle>by {{ image.owner.username }}</mat-card-subtitle>
+            <mat-card-title>{{ displayTitle(image.title) }}</mat-card-title>
+            <mat-card-subtitle>by {{ image.ownerInfos.username }}</mat-card-subtitle>
           </mat-card-header>
           <img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
           <mat-card-content class="card-body">
             <p class="card-text">{{ image.datesFormatted.taken }}</p>
-            <p>{{ image.description }}</p>
+            {{ displayDescription(image.description)}}
           </mat-card-content>
         </mat-card>
       </div>

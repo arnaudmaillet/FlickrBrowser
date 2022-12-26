@@ -1,15 +1,13 @@
 .modal-header {
-  max-height: 80vh;
-  max-width: 60vw;
-  position: relative;
-  display: block;
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 10px 0;
+  justify-content: space-between;
 }
 
 .card-img {
-  max-height: 70vh;
-  max-width: 50vw;
-  min-width: 250px;
-  border-radius: 10px;
+  display: block;
+  border-radius: 3px;
 }
 
 .avatar {
@@ -22,27 +20,38 @@
   color: grey;
 }
 
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-align: center;
-  color: #3f3c3c;
-  position: relative;
-  bottom: 25px;
-  text-transform: uppercase;
+.mat-dialog-content {
+  max-height: initial;
 }
 
 .btn-close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 3px;
-  padding: 2px;
+  margin-bottom: auto;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  color: #3f3c3c;
+  bottom: 25px;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+.tabs {
+  max-width: 600px;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .mat-list .mat-list-item .mat-line{
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+::ng-deep  .mat-list .mat-list-item{
+  height:initial!important;
 }

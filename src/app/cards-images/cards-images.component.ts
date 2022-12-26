@@ -16,9 +16,25 @@ export class CardsImagesComponent implements OnInit {
     
   }
 
+  displayTitle(title: string){
+    return title.length > 20 ? title.substring(0, 20) + '...' : title;
+  }
+
+  displayDescription(description: string){
+    if (description.length === 0) {
+      return 'No description';
+    } else if (description.length > 100) {
+      return description.substring(0, 100) + '...';
+    } else {
+      return description;
+    }
+  }
+
   openDialog(image: any){
     this.matDialog.open(CardModalComponent, {
-      data: image
+      data: image,
+      disableClose: true,
+      maxHeight: '95vh',
     });
   }
 }

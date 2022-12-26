@@ -61,7 +61,7 @@ export class SearchImagesComponent implements OnInit {
     this._maxDate = new Date();
     this.color = Code_color.RED;
     this.isColorEnabled = false;
-    this._safeMode = 'Safe';
+    this._safeMode = 'Restricted';
     this._tags = [];
     this.form = new FormGroup({
       keyword: new FormControl(this._keyword),
@@ -89,6 +89,10 @@ export class SearchImagesComponent implements OnInit {
 
   get tags() {
     return this._tags;
+  }
+
+  get safeMode() {
+    return this._safeMode;
   }
 
   set keyword(keyword: string) {

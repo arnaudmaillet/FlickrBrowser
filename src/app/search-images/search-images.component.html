@@ -57,7 +57,7 @@
 
           <div class="col-12">
             <label for="display">Safe option</label>
-            <select class="form-control" (change)="setSafeMode($event)">
+            <select class="form-control" (change)="setSafeMode($event)" [value]="safeMode">
               <option>Safe</option>
               <option>Moderate</option>
               <option>Restricted</option>

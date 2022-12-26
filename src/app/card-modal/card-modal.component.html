@@ -1,22 +1,46 @@
 <!-- modal with title image description, owner close button -->
 
-<div class="modal-header">
-  <button
-    class="btn-close"
-    (click)="closeDialog()"
-  ></button>
-  <div class="example-header-image">
+<div class="modal-header" mat-dialog-title>
+  <div>
     <img
       class="avatar"
-      src="{{ image.owner.avatar }}"
-      title="{{ image.owner.avatar }}/"
+      src="{{ image.ownerInfos.avatar }}"
+      title="{{ image.ownerInfos.avatar }}/"
     />
   </div>
-
-  <h5 class="modal-title" id="exampleModalLabel">{{ image.title }}</h5>
+  <h5 mat-dialog-title class="modal-title" id="exampleModalLabel">{{ image.title }}</h5>
+  <button
+  class="btn btn-close"
+  type="button"
+  (click)="closeDialog()"
+></button>
 </div>
-<div class="modal-body">
+<div class="modal-body" mat-dialog-content>
   <img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
-  <p class="owner">Photo by {{ image.owner.name }} as {{ image.owner.username }}</p>
-  <p class="description">{{ image.description }}</p>
+  <p class="owner">Photo by {{ image.ownerInfos.name }} as {{ image.ownerInfos.username }}</p>
+    <mat-tab-group mat-stretch-tabs class="tabs">
+      <mat-tab label="Informations"> Content 3 </mat-tab>
+      <mat-tab label="Description" [disabled]="isDescriptionDisabled(image.description)"> 
+        <p class="content">{{ image.description }} </p>
+      </mat-tab>
+      <mat-tab label="Comments" [disabled]="isCommentDisabled(image.comments)">
+        <mat-list *ngFor="let comment of image.comments">
+          <mat-list-item>
+            <div class="comment">
+              <h2>{{ comment.authorname }}</h2>
+              <p>{{ getDateToString(comment.datecreate) }}</p>
+              <p>{{ comment._content }}</p>
+            </div>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+      </mat-tab>
+      <mat-tab label="Author's photos">
+        <mat-grid-list cols="3" rowHeight="1:1">
+          <mat-grid-tile *ngFor="let photo of image.ownerInfos.photos">
+            <img src="{{ photo.url }}" alt="{{ photo.title }}" />
+          </mat-grid-tile>
+        </mat-grid-list>
+      </mat-tab>
+    </mat-tab-group>
 </div>
