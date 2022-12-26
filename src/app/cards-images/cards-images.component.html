@@ -16,6 +16,7 @@
           </mat-card-header>
           <img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
           <mat-card-content class="card-body">
+            <p class="card-text">{{ image.datesFormatted.taken }}</p>
             <p>{{ image.description }}</p>
           </mat-card-content>
         </mat-card>

@@ -20,6 +20,21 @@ export interface FlickrPhoto {
   info: any;
   description: string;
   owner: Owner;
+  size: string;
+  dates: Dates;
+  dateFormatted: DatesFormatted;
+}
+
+export interface Dates {
+  taken: Date;
+  posted: Date;
+  updated: Date;
+}
+
+export interface DatesFormatted {
+  taken: string;
+  posted: string;
+  updated: string;
 }
 
 export interface FlickrResponse {
@@ -28,10 +43,15 @@ export interface FlickrResponse {
   };
 }
 
+export interface Tags {
+  hottags: any;
+}
+
 enum FlickrMethod {
   SEARCH = 'flickr.photos.search',
   GET_INFO = 'flickr.photos.getInfo',
   GET_RECENT = 'flickr.photos.getRecent',
+  GET_SIZES = 'flickr.photos.getSizes',
 }
 
 @Injectable({
@@ -43,24 +63,35 @@ export class FlickrService {
   private _format: string = 'format=json&nojsoncallback=1';
 
   constructor(private http: HttpClient) {}
+    
 
   searchPhotos(
     searchText: string,
     perPage: number,
+    maxDate: Date,
+    minDate: Date,
+    safeMode: string,
+    tags: string[],
     sort: string
   ): Observable<Object> {
-    const args = `${this._apiKey}&text=${searchText}&color_codes=e&sort=${sort}&per_page=${perPage}&${this._format}`;
+    let stringTags = this.parseTags(tags);
+    let tagsParams = stringTags.length > 0 ? `&tags=${stringTags}` : '';
+    const args = `&${this._apiKey}&text=${searchText}&color_codes=e&sort=${sort}&min_taken_date=${minDate.toISOString().substring(0, 10)}&max_taken_date=${maxDate.toISOString().substring(0, 10)}${tagsParams}&safe_search=${safeMode}&per_page=${perPage}&${this._format}`;
     console.log(args);
     return this.http
-      .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}&${args}`)
+      .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}${args}`)
       .pipe(
         map(async (res: FlickrResponse) => {
           const photos: any[] = [];
           console.log(res);
-          res.photos.photo.forEach(async (photo) => {
+          res.photos?.photo?.forEach(async (photo: any) => {
             await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
-              async (res: any) => {
-                photos.push(this.instanciatePhoto(photo, res));
+              async (resInfo: any) => {
+                await lastValueFrom(this.getPhotoSizes(photo.id)).then(
+                  async (resSize: any) => {
+                    photos.push(this.instanciatePhoto(photo, resInfo, resSize));
+                  }
+                );
               }
             );
           });
@@ -72,31 +103,39 @@ export class FlickrService {
   }
 
   getRecentPhotos(perPage: number): Observable<Object> {
-    const args = `${this._apiKey}&${this._format}&per_page=${perPage}`;
+    const args = `&${this._apiKey}&${this._format}&per_page=${perPage}`;
 
     return this.http
-      .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.GET_RECENT}&${args}`)
+      .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.GET_RECENT}${args}`)
       .pipe(
         map(async (res: FlickrResponse) => {
           const photos: any[] = [];
           //console.log(res);
           res.photos.photo.forEach(async (photo) => {
             await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
-              async (res: any) => {
-                photos.push(this.instanciatePhoto(photo, res));
+              async (resInfo: any) => {
+                await lastValueFrom(this.getPhotoSizes(photo.id)).then(
+                  async (resSize: any) => {
+                    photos.push(this.instanciatePhoto(photo, resInfo, resSize));
+                  }
+                );
               }
             );
           });
-
           //console.log(photos);
           return photos;
         })
       );
   }
 
+  getPhotoSizes(photoId: string): Observable<Object> {
+    const args: string = `&${this._apiKey}&photo_id=${photoId}&format=json&nojsoncallback=1`;
+    return this.http.get(`${this._apiUrl}${FlickrMethod.GET_SIZES}${args}`);
+  }
+
   private getPhotoInfo(photoId: string, perPage: number): Observable<Object> {
-    const args: string = `${this._apiKey}&photo_id=${photoId}&per_page=${perPage}&format=json&nojsoncallback=1`;
-    return this.http.get(`${this._apiUrl}${FlickrMethod.GET_INFO}&${args}`);
+    const args: string = `&${this._apiKey}&photo_id=${photoId}&per_page=${perPage}&format=json&nojsoncallback=1`;
+    return this.http.get(`${this._apiUrl}${FlickrMethod.GET_INFO}${args}`);
   }
 
   private getDescription(photo: any): string {
@@ -111,26 +150,47 @@ export class FlickrService {
     return description;
   }
 
-  private instanciatePhoto(photo: any, res: any): FlickrPhoto {
-    let avatarUrl: string = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${res.photo.owner.nsid}.jpg`;
-    return {
-      url: `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`,
-      title:
-        photo.title.length > 20
-          ? photo.title.substring(0, 20) + ' ...'
-          : photo.title,
-      description: this.getDescription(res.photo),
-      info: res,
-      id: photo.id,
-      server: photo.server,
-      secret: photo.secret,
-      farm: photo.farm,
-      owner: {
-        nsid: res.photo.owner.nsid,
-        username: res.photo.owner.username,
-        name: res.photo.owner.realname,
-        avatar: avatarUrl,
-      },
-    };
+  private parseTags(tags: string[]): string {
+    let tagsParsed: string = '';
+    tags.forEach((tag) => {
+      tagsParsed += tag + '-';
+    });
+    return tagsParsed.slice(0, -1);
+  }
+
+  private instanciatePhoto(photo: any, resInfo: any, resSize: any): any {
+    if (resInfo.photo.owner) {
+      let avatarUrl: string = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${resInfo.photo.owner?.nsid}.jpg`;
+      return {
+        url: `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`,
+        title:
+          photo.title.length > 20
+            ? photo.title.substring(0, 20) + ' ...'
+            : photo.title,
+        description: this.getDescription(resInfo.photo),
+        info: resInfo,
+        id: photo.id,
+        server: photo.server,
+        secret: photo.secret,
+        farm: photo.farm,
+        size: resSize,
+        dates: {
+          taken: new Date(resInfo.photo.dates.taken),
+          posted: new Date(resInfo.photo.dates.posted * 1000),
+          updated: new Date(resInfo.photo.dates.lastupdate * 1000),
+        },
+        datesFormatted: {
+          taken: resInfo.photo.dates.taken.substring(0, 10),
+          posted: new Date(resInfo.photo.dates.posted * 1000).toLocaleString().substring(0, 10),
+          updated: new Date(resInfo.photo.dates.lastupdate * 1000).toLocaleString().substring(0, 10)
+        },
+        owner: {
+          nsid: resInfo.photo.owner.nsid,
+          username: resInfo.photo.owner.username,
+          name: resInfo.photo.owner.realname,
+          avatar: avatarUrl,
+        },
+      };
+    }
   }
 }

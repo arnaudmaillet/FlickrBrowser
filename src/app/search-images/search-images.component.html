@@ -16,15 +16,52 @@
             <input type="number" class="form-control" (keyup)="setNumberOfImages($event)"
               [defaultValue]="this.numberOfImages" formControlName="numberOfImages" />
           </div>
+
+          <form>
+            <div class="col-12 datepicker">
+              <label for="datemin">Date min</label>
+                <div class="input-group">
+                  <input
+                    class="form-control"
+                    name="dp"
+                    [(ngModel)]="minDatePicker"
+                    [placeholder]="minDate.toISOString().substring(0, 10)"
+                    ngbDatepicker
+                    #min="ngbDatepicker"
+                  />
+                  <button class="btn btn-secondary bi bi-calendar3" (click)="min.toggle()" type="button">
+                    <mat-icon class="dateIcon">date_range</mat-icon>
+                  </button>
+              </div>
+            </div>
+          </form>
+          
+          <form>
+            <div class="col-12 datepicker">
+              <label for="datemax">Date max</label>
+                <div class="input-group">
+                  <input
+                    class="form-control"
+                    name="dp"
+                    [(ngModel)]="maxDatePicker"
+                    [placeholder]="maxDate.toISOString().substring(0, 10)"
+                    ngbDatepicker
+                    #d="ngbDatepicker"
+                  />
+                  <button class="btn btn-secondary bi bi-calendar3" (click)="d.toggle()" type="button">
+                    <mat-icon class="dateIcon">date_range</mat-icon>
+                  </button>
+              </div>
+            </div>
+          </form>
+
           <div class="col-12">
-            <label for="datemin">Date min</label>
-            <input type="date" class="form-control" placeholder="Date min d'upload" id="datemin"
-              formControlName="startDate" [defaultValue]="startDate" />
-          </div>
-          <div class="col-12">
-            <label for="datemax">Date max</label>
-            <input type="date" class="form-control" placeholder="Date max d'upload" id="datemax"
-              formControlName="endDate" [defaultValue]="endDate" />
+            <label for="display">Safe option</label>
+            <select class="form-control" (change)="setSafeMode($event)">
+              <option>Safe</option>
+              <option>Moderate</option>
+              <option>Restricted</option>
+            </select>
           </div>
 
           <div class="col-12">
@@ -38,25 +75,15 @@
             <Label for="hashtag">Hashtag</Label>
             <input type="text" class="form-control" placeholder="Hashtag" id="hashtag" />
           </div>
-          <div class="col-12">
-            <label for="size">Taille</label>
-            <select class="form-control">
-              <option>
-                < 300ko</option>
-              <option>
-                < 1Mo</option>
-              <option>
-                < 5Mo</option>
-              <option>
-                < 10Mo</option>
-            </select>
-          </div>
         </div>
         <div class="row button-container">
           <button type="submit" class="btn btn-primary">Rechercher</button>
         </div>
       </form>
+      <app-tags-chips (newItemEvent)="setTags($event)"></app-tags-chips>
     </div>
+
+
     <div class="col-sm-12 col-md-12 col-lg-9 p-9">
       <div class="tri">
         <div class="btn-group">

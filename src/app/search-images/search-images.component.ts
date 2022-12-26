@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { FlickrService } from '../services/flickr.service';
 import { FormControl, FormGroup } from '@angular/forms';
+import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+
 
 enum Sort {
   DATE_POSTED_ASC = 'date-posted-asc',
@@ -20,9 +23,6 @@ enum Code_color {
   GREEN = '6',
   GREEN_BLUE = '7',
 }
-  
-  
-
 
 @Component({
   selector: 'app-search-images',
@@ -33,29 +33,39 @@ export class SearchImagesComponent implements OnInit {
   private _keyword: string;
   private _numberOfImages: number;
   private _images: any[];
-  private _startDate: Date;
-  private _endDate: Date;
+  private _minDate: Date;
+  private _maxDate: Date;
   private _sort: Sort;
-  public form: FormGroup;
+  private _safeMode: string;
+  private _tags: string[] = [];
   private color: Code_color;
   private isColorEnabled: boolean;
 
-  constructor(private flickrService: FlickrService) {}
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  fruitCtrl = new FormControl('');
+  
+
+  maxDatePicker: NgbDateStruct;
+  minDatePicker: NgbDateStruct;
+  form: FormGroup;
+
+  constructor(private flickrService: FlickrService) {
+  }
 
   ngOnInit(): void {
     this._keyword = '';
     this._numberOfImages = 100;
     this._sort = Sort.DATE_POSTED_DESC;
     this._images = [];
-    this._startDate = new Date(1990, 1, 1);
-    this._endDate = new Date();
+    this._minDate = new Date('2000-01-01');
+    this._maxDate = new Date();
     this.color = Code_color.RED;
     this.isColorEnabled = false;
+    this._safeMode = 'Safe';
+    this._tags = [];
     this.form = new FormGroup({
       keyword: new FormControl(this._keyword),
       numberOfImages: new FormControl(this._numberOfImages),
-      startDate: new FormControl(this._startDate),
-      endDate: new FormControl(this._endDate),
     });
 
     this.getRecentPhotos();
@@ -69,16 +79,50 @@ export class SearchImagesComponent implements OnInit {
     return this._numberOfImages;
   }
 
-  get startDate() {
-    return this._startDate;
+  get maxDate() {
+    return this._maxDate;
   }
 
-  get endDate() {
-    return this._endDate;
+  get minDate() {
+    return this._minDate;
+  }
+
+  get tags() {
+    return this._tags;
   }
 
   set keyword(keyword: string) {
     this._keyword = keyword;
+  }
+
+  setTags(tags: string[]) {
+    if (tags === undefined) {
+      this._tags = [];
+    } else {
+      this._tags = tags;
+    }
+  }
+
+  private setMaxDate(maxDate: NgbDateStruct) {
+    if (maxDate === undefined) {
+      this._maxDate = new Date();
+    }
+    else {
+      this._maxDate = new Date(
+        `${maxDate.year}-${maxDate.month}-${maxDate.day}`
+      );
+    }
+  }
+
+  private setMinDate(minDate: NgbDateStruct) {
+    if (minDate === undefined) {
+      this._minDate = new Date('2000-01-01');
+    }
+    else {
+      this._minDate = new Date(
+        `${minDate.year}-${minDate.month}-${minDate.day}`
+      );
+    }
   }
 
   setNumberOfImages(event: any) {
@@ -100,7 +144,11 @@ export class SearchImagesComponent implements OnInit {
       this.flickrService.searchPhotos(
         this._keyword,
         this._numberOfImages,
-        `${this._sort}`,
+        this._maxDate,
+        this._minDate,
+        this._safeMode,
+        this._tags,
+        this._sort,
       )
     ).then((res: any) => {
       this._images = res;
@@ -135,16 +183,30 @@ export class SearchImagesComponent implements OnInit {
     }
   }
 
-  onSubmit() {
+  setSafeMode(event: any) {
+    this._safeMode = event.target.value;
+    this.searchPhotos();
+  }
+
+  onSubmit(): void {
     this._keyword = this.form.value.keyword;
     this._numberOfImages = this.form.value.numberOfImages;
-    this._startDate = this.form.value.startDate;
-    this._endDate = this.form.value.endDate;
+    this.setMinDate(this.minDatePicker);
+    this.setMaxDate(this.maxDatePicker);
 
-    if (this._keyword.toLowerCase().includes('f50')) {
-      this._keyword = 'twingo';
+    if (this._keyword === undefined || this._keyword.length === 0) {
+      alert('Veuillez saisir un mot clé');
+    } else
+    {
+      if (this._minDate < this._maxDate) {
+        if (this._keyword.toLowerCase().includes('f50')) {
+          this._keyword = 'twingo';
+        }
+        this.searchPhotos();
+      } else {
+        alert('La date de début doit être inférieure à la date de fin');
+      }
     }
-    this._keyword.length > 0 ? this.searchPhotos() : this.getRecentPhotos();
   }
 
   private findColor(color: string) {
