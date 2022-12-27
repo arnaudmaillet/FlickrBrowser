@@ -1,41 +1,70 @@
-<!-- modal with title image description, owner close button -->
-
-<div class="modal-header" mat-dialog-title>
-  <div>
-    <img
-      class="avatar"
-      src="{{ image.ownerInfos.avatar }}"
-      title="{{ image.ownerInfos.avatar }}/"
-    />
-  </div>
-  <h5 mat-dialog-title class="modal-title" id="exampleModalLabel">{{ image.title }}</h5>
-  <button
-  class="btn btn-close"
-  type="button"
-  (click)="closeDialog()"
-></button>
+<div>
+<img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
 </div>
 <div class="modal-body" mat-dialog-content>
-  <img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
-  <p class="owner">Photo by {{ image.ownerInfos.name }} as {{ image.ownerInfos.username }}</p>
     <mat-tab-group mat-stretch-tabs class="tabs">
-      <mat-tab label="Informations"> Content 3 </mat-tab>
-      <mat-tab label="Description" [disabled]="isDescriptionDisabled(image.description)"> 
-        <p class="content">{{ image.description }} </p>
+      <mat-tab label="Information">
+        <div class="container information">
+          <div class="row">
+            <div class="information-header">
+              <div class="information-header-user">
+                <img
+                class="avatar"
+                src="{{ image.ownerInfos.avatar }}"
+                title="{{ image.ownerInfos.avatar }}/"
+                />
+                <h2>{{ image.ownerInfos.username }}</h2>
+              </div>
+              <div class="information-header-date">
+                <div class="information-header-date-views">
+                  <mat-icon>visibility</mat-icon>
+                  <h2>{{ image.views }}</h2>
+                </div>
+                <div>{{ image.datesFormatted.posted }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="information-content">
+              <div class="information-content-description">
+                <h2>Description</h2>
+                <p [innerHTML]="getDescription(image.description)"></p>
+              </div>
+              <div class="information-content-tags">
+                <div class="tags">
+                  <div [ngStyle]="{'margin' : isTagsEmpty(image.tags) === '' ? '0px' : '30px 0px 10px 0px'}" [innerHTML]="isTagsEmpty(image.tags)"></div>
+                  <mat-chip-list>
+                    <mat-chip *ngFor="let tag of image.tags">
+                      {{tag._content}}
+                    </mat-chip>
+                  </mat-chip-list>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </mat-tab>
       <mat-tab label="Comments" [disabled]="isCommentDisabled(image.comments)">
         <mat-list *ngFor="let comment of image.comments">
           <mat-list-item>
-            <div class="comment">
-              <h2>{{ comment.authorname }}</h2>
-              <p>{{ getDateToString(comment.datecreate) }}</p>
-              <p>{{ comment._content }}</p>
+            <div class="container">
+              <div class="comment-header">
+                <div>
+                  <img
+                  class="avatar"
+                  src="{{ comment.avatarUrl }}"
+                  title="{{ comment.avatarUrl }}/"/>
+                  <h2>{{ comment.authorname }}</h2>
+                </div>
+                <p>{{ getDateToString(comment.datecreate) }}</p>
+              </div>
+              <p class="comment-content" [innerHTML]="comment._content"></p>
             </div>
           </mat-list-item>
           <mat-divider></mat-divider>
         </mat-list>
       </mat-tab>
-      <mat-tab label="Author's photos">
+      <mat-tab label="Author's photos" [disabled]="isAuthorsPhotosDisabled(image.ownerInfos.photos)">
         <mat-grid-list cols="3" rowHeight="1:1">
           <mat-grid-tile *ngFor="let photo of image.ownerInfos.photos">
             <img src="{{ photo.url }}" alt="{{ photo.title }}" />

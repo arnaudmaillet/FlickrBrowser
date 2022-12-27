@@ -1,13 +1,6 @@
-.modal-header {
-  display: flex;
-  flex-direction: row;
-  padding: 0 0 10px 0;
-  justify-content: space-between;
-}
-
-.card-img {
-  display: block;
-  border-radius: 3px;
+::ng-deep.mat-dialog-container {
+  padding: 0px;
+  overflow-x: hidden;
 }
 
 .avatar {
@@ -24,27 +17,69 @@
   max-height: initial;
 }
 
-.btn-close {
-  margin-bottom: auto;
+.information {
+  padding: 20px;
 }
 
-.modal-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-align: center;
-  color: #3f3c3c;
-  bottom: 25px;
-  text-transform: uppercase;
-  margin-top: 10px;
+.information-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.information-header-user {
+  display: flex;
+}
+
+.information-header-user h2 {
+  margin: auto 0 auto 10px;
+}
+
+.information-header-user img {
+  margin: auto 0;
+}
+
+.information-header-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.information-header-date-views {
+  display: flex;
+  align-items: center;
+}
+
+.information-header-date-views h2{
+  margin: auto 0 auto 10px;
+}
+
+.information-content {
+  padding: 20px 10px 0 10px;
+}
+
+.comment-content {
+  padding: 0 10px;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.comment-header div {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.comment-header div h2{
+  margin: auto;
+  padding: 0 5px;
 }
 
 .tabs {
   max-width: 600px;
-}
-
-.comment {
-  display: flex;
-  flex-direction: column;
 }
 
 ::ng-deep .mat-list .mat-list-item .mat-line{

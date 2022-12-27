@@ -33,8 +33,8 @@ export class CardsImagesComponent implements OnInit {
   openDialog(image: any){
     this.matDialog.open(CardModalComponent, {
       data: image,
-      disableClose: true,
-      maxHeight: '95vh',
+      autoFocus: false,
+      maxHeight: '95vh'
     });
   }
 }

@@ -22,7 +22,23 @@ export class CardModalComponent implements OnInit {
     return yourDate.toISOString().split('T')[0]
   }
 
-  isDescriptionDisabled(description: string){
+  getDescription(description: string): string {
+    if (description.length === 0 || description === undefined) {
+      return 'No description';
+    } else {
+      return description;
+    }
+  }
+
+  isAuthorsPhotosDisabled(photos: any | undefined): boolean {
+    if (photos === undefined || photos.length === 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  isDescriptionDisabled(description: string): boolean {
     if (description.length > 0) {
       return false;
     } else {
@@ -38,8 +54,12 @@ export class CardModalComponent implements OnInit {
     }
   }
 
-  closeDialog(){
-    this.matDialog.closeAll();
+  isTagsEmpty(tags: string | undefined): string {
+    if (tags === undefined || tags.length === 0) {
+      return '';
+    } else {
+      return `Tags :`;
+    }
   }
 }
 

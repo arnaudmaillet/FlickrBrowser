@@ -18,13 +18,18 @@ export interface FlickrPhoto {
   title: string;
   secret: string;
   server: string;
-  info: any;
+  location: string;
   description: string;
   owner: string;
   ownerInfos: Owner;
   dates: Dates;
   dateFormatted: DatesFormatted;
+  views: string;
+  media: string;
+  format: string;
   comments: Comment[];
+  tags: string[];
+  info: any;
 }
 
 export interface Comment {
@@ -62,6 +67,7 @@ enum FlickrMethod {
   GET_SIZES = 'flickr.photos.getSizes',
   GET_COMMENTS = 'flickr.photos.comments.getList',
   GET_USER_PHOTOS = 'flickr.people.getPublicPhotos',
+  GET_LOCATION = 'flickr.photos.geo.getLocation',
 }
 
 @Injectable({
@@ -87,30 +93,30 @@ export class FlickrService {
     let stringTags = this.parseTags(tags);
     let tagsParams = stringTags.length > 0 ? `&tags=${stringTags}` : '';
     const args = `&${this._apiKey}&text=${searchText}&color_codes=e&sort=${sort}&min_taken_date=${minDate.toISOString().substring(0, 10)}&max_taken_date=${maxDate.toISOString().substring(0, 10)}${tagsParams}&safe_search=${safeMode}&per_page=${perPage}&${this._format}`;
-    //console.log(args);
     return this.http
       .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}${args}`)
       .pipe(
         map(async (res: FlickrResponse) => {
           const photos: any[] = [];
-          //console.log(res);
           res.photos?.photo?.forEach(async (photo: any) => {
             await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
               async (resInfo: any) => {
-                await lastValueFrom(this.getComments(photo.id)).then(
-                  async (resComments: any) => {
-                    await lastValueFrom(this.getUserPhotos(photo.owner, perPage, safeMode)).then(
-                      async (resUserPhotos: any) => {
-                        photos.push(this.instanciatePhoto(photo, resInfo, resComments, resUserPhotos));
+                await lastValueFrom(this.getLocation(photo.id)).then(
+                  async (resLocation: any) => {
+                    await lastValueFrom(this.getComments(photo.id)).then(
+                      async (resComments: any) => {
+                        await lastValueFrom(this.getUserPhotos(photo.owner, perPage, safeMode)).then(
+                          async (resUserPhotos: any) => {
+                            photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resComments, resUserPhotos));
+                          }
+                        ); 
                       }
-                    ); 
+                    );
                   }
                 );
               }
             );
           });
-
-          //console.log(photos);
           return photos;
         })
       );
@@ -124,26 +130,32 @@ export class FlickrService {
       .pipe(
         map(async (res: FlickrResponse) => {
           const photos: any[] = [];
-          //console.log(res);
           res.photos.photo.forEach(async (photo) => {
             await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
               async (resInfo: any) => {
-                await lastValueFrom(this.getComments(photo.id)).then(
-                  async (resComments: any) => {
-                    await lastValueFrom(this.getUserPhotos(photo.owner, 50, "Restricted")).then(
-                      async (resUserPhotos: any) => {
-                        console.log(photo.owner);
-                        photos.push(this.instanciatePhoto(photo, resInfo, resComments, resUserPhotos));
+                await lastValueFrom(this.getLocation(photo.id)).then(
+                  async (resLocation: any) => {
+                    await lastValueFrom(this.getComments(photo.id)).then(
+                      async (resComments: any) => {
+                        await lastValueFrom(this.getUserPhotos(photo.owner, 50, "Restricted")).then(
+                          async (resUserPhotos: any) => {
+                            photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resComments, resUserPhotos));
+                          }
+                        );
                       }
                     );
                   }
                 );
               });
           });
-          //console.log(photos);
           return photos;
         })
       );
+  }
+
+  private getLocation(photoId: string): Observable<Object> {
+    const args = `&${this._apiKey}&photo_id=${photoId}&${this._format}`;
+    return this.http.get(`${this._apiUrl}${FlickrMethod.GET_LOCATION}${args}`);
   }
 
   private getUserPhotos(userId: string, perPage: number, safeMode: string): Observable<Object> {
@@ -181,19 +193,37 @@ export class FlickrService {
     return photos;
   }
 
-  private instanciatePhoto(photo: any, resInfo: any, resComment: any, resUserPhotos): any {
+  private getAvatarUrl(comments: any[]): any {
+    comments.forEach((comment) => {
+      comment.avatarUrl = `http://farm${comment.iconfarm}.staticflickr.com/${comment.iconserver}/buddyicons/${comment.author}.jpg`;
+    });
+    return comments.reverse();
+  }
+
+  private getUsername(username: string | undefined): string {
+    if (username === undefined || username === '') {
+      return 'Anonymous';
+    }
+    return username;
+  }
+
+  private instanciatePhoto(photo: any, resInfo: any, resLocation:any, resComment: any, resUserPhotos): any {
     if (resInfo.photo.owner) {
-      let avatarUrl: string = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${resInfo.photo.owner?.nsid}.jpg`;
+      let avatarUrl: string | undefined = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${resInfo.photo.owner?.nsid}.jpg`;
       return {
         url: `https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`,
         title: photo.title.length === 0 ? 'No title' : photo.title,
         description: resInfo.photo.description._content,
-        info: resInfo,
         id: photo.id,
+        views: resInfo.photo.views,
+        location: resLocation?.photo?.location,
+        media: resInfo.photo.media,
+        format: resInfo.photo.originalformat,
+        tags: resInfo.photo.tags?.tag,
         server: photo.server,
         secret: photo.secret,
         farm: photo.farm,
-        comments: resComment?.comments?.comment,
+        comments: resComment.comments.comment ? this.getAvatarUrl(resComment.comments.comment) : undefined,
         dates: {
           taken: new Date(resInfo.photo.dates.taken),
           posted: new Date(resInfo.photo.dates.posted * 1000),
@@ -207,11 +237,12 @@ export class FlickrService {
         owner: photo.owner,
         ownerInfos: {
           nsid: resInfo.photo.owner.nsid,
-          username: resInfo.photo.owner.username,
+          username: this.getUsername(resInfo.photo.owner.username),
           name: resInfo.photo.owner.realname,
           avatar: avatarUrl,
           photos: this.getUrls(resUserPhotos.photos.photo),
         },
+        info: resInfo,
       };
     }
   }
