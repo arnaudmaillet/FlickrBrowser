@@ -20,8 +20,8 @@ enum Code_color {
   GREEN = '6',
   GREEN_BLUE = '7',
 }
-  
-  
+
+
 
 
 @Component({
@@ -40,7 +40,7 @@ export class SearchImagesComponent implements OnInit {
   private color: Code_color;
   private isColorEnabled: boolean;
 
-  constructor(private flickrService: FlickrService) {}
+  constructor(private flickrService: FlickrService) { }
 
   ngOnInit(): void {
     this._keyword = '';
@@ -57,7 +57,6 @@ export class SearchImagesComponent implements OnInit {
       startDate: new FormControl(this._startDate),
       endDate: new FormControl(this._endDate),
     });
-
     this.getRecentPhotos();
   }
 

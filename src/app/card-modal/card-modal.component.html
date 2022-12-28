@@ -1,22 +1,15 @@
 <!-- modal with title image description, owner close button -->
-
-<div class="modal-header">
-  <button
-    class="btn-close"
-    (click)="closeDialog()"
-  ></button>
-  <div class="example-header-image">
-    <img
-      class="avatar"
-      src="{{ image.owner.avatar }}"
-      title="{{ image.owner.avatar }}/"
-    />
+<div class="full-modal">
+  <div class="modal-header">
+      <img class="image-owner" src="{{ image.owner.avatar }}" title="{{ image.owner.avatar }}/" />
+      <h5 class="modal-title" id="image-title">{{ image.title }}</h5>
+      <button class="btn-close" (click)="closeDialog()"></button>
   </div>
-
-  <h5 class="modal-title" id="exampleModalLabel">{{ image.title }}</h5>
-</div>
-<div class="modal-body">
-  <img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
-  <p class="owner">Photo by {{ image.owner.name }} as {{ image.owner.username }}</p>
-  <p class="description">{{ image.description }}</p>
+  <div class="body">
+    <div class="modal-body">
+      <img class="body-image" src="{{ image.url }}" title="{{ image.title }}" />
+      <p class="owner">Photo by {{ image.owner.name }} as {{ image.owner.username }}</p>
+      <p class="description">{{ image.description }}</p>
+    </div>
+  </div>
 </div>

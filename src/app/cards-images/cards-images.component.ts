@@ -18,7 +18,9 @@ export class CardsImagesComponent implements OnInit {
 
   openDialog(image: any){
     this.matDialog.open(CardModalComponent, {
-      data: image
+      data: image,
+      width: '75%',
+      height: '75%',
     });
   }
 }
