@@ -6,6 +6,7 @@
 ::ng-deep.mat-dialog-container {
   padding: 0px;
   overflow-x: hidden;
+}
 
 .mat-dialog-content {
   max-height: initial;
