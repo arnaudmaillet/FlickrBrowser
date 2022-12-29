@@ -235,9 +235,6 @@ export class SearchImagesComponent implements OnInit {
           this.keyword = 'twingo';
         }
         this.searchPhotos();
-        if (this.images.length === 0) {
-          alert('Aucune photo trouvée');
-        }
       } else {
         alert('La date de début doit être inférieure à la date de fin');
       }
