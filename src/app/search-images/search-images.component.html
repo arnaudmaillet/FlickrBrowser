@@ -1,111 +1,111 @@
 <div class="container">
   <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-3">
-      <div class="header">
+    <div class="col-sm-12 col-md-4 col-lg-4">
+      <div class="container-logo">
         <img class="logo" src="./../../assets/images/logo.png" alt="Flickr logo" />
       </div>
+      <div>
+        <mat-slide-toggle color="primary" [(ngModel)]="displayMode" [checked]="displayMode">{{getDisplayMode()}}</mat-slide-toggle>
+      </div>
+      <div>
+        <mat-form-field appearance="outline" class="search-input">
+          <mat-label>Search a word</mat-label>
+          <input matInput type="text" [(ngModel)]="keyword" (change)="updateKeyword($event)" (keyup.enter)="onSubmit()" placeholder="ex: Mercedes">
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-8 col-lg-8">
       <form class="form-input" [formGroup]="form" (ngSubmit)="onSubmit()">
         <h2>Recherchez des images</h2>
         <div class="row">
-          <div class="col-12">
-            <label for="keyword">Mot clé</label>
-            <input type="Search me" class="form-control" formControlName="keyword" placeholder="ex: Porsche" />
-          </div>
-          <div class="col-12">
-            <label for="number">Nombre d'images</label>
-            <input type="number" class="form-control" (keyup)="setNumberOfImages($event)"
-              [defaultValue]="this.numberOfImages" formControlName="numberOfImages" />
+          <div class="col-sm-12 col-md-6">
+            <mat-form-field appearance="outline">
+              <mat-label>Safe option</mat-label>
+              <mat-select (change)="setSafeMode($event)" [(value)]="safeMode">
+                <mat-option value="Safe">Safe</mat-option>
+                <mat-option value="Moderate">Moderate</mat-option>
+                <mat-option value="Restricted">Restricted</mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
 
-          <form>
-            <div class="col-12 datepicker">
-              <label for="datemin">Date min</label>
-                <div class="input-group">
-                  <input
-                    class="form-control"
-                    name="dp"
-                    [(ngModel)]="minDatePicker"
-                    [placeholder]="minDate.toISOString().substring(0, 10)"
-                    ngbDatepicker
-                    #min="ngbDatepicker"
-                  />
-                  <button class="btn btn-secondary bi bi-calendar3" (click)="min.toggle()" type="button">
-                    <mat-icon class="dateIcon">date_range</mat-icon>
-                  </button>
+          <div class="col-sm-12 col-md-6">
+            <div class="row input-date">
+              <div class="col-10">
+                <mat-form-field appearance="outline">
+                  <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                      <input matStartDate placeholder="Start date" [formControl]="formMinDate" (dateChange)="setMinDate($event.target.value)">
+                      <input matEndDate placeholder="End date" [formControl]="formMaxDate" (dateChange)="setMaxDate($event.target.value)">
+                    </mat-date-range-input>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+              </div>
+              <div class="col-2 toggle">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
               </div>
             </div>
-          </form>
-          
-          <form>
-            <div class="col-12 datepicker">
-              <label for="datemax">Date max</label>
-                <div class="input-group">
-                  <input
-                    class="form-control"
-                    name="dp"
-                    [(ngModel)]="maxDatePicker"
-                    [placeholder]="maxDate.toISOString().substring(0, 10)"
-                    ngbDatepicker
-                    #d="ngbDatepicker"
-                  />
-                  <button class="btn btn-secondary bi bi-calendar3" (click)="d.toggle()" type="button">
-                    <mat-icon class="dateIcon">date_range</mat-icon>
-                  </button>
-              </div>
-            </div>
-          </form>
-
-          <div class="col-12">
-            <label for="display">Safe option</label>
-            <select class="form-control" (change)="setSafeMode($event)" [value]="safeMode">
-              <option>Safe</option>
-              <option>Moderate</option>
-              <option>Restricted</option>
-            </select>
           </div>
 
           <div class="col-12">
-            <label for="display">affichage</label>
-            <select class="form-control">
-              <option>Liste</option>
-              <option>Slider</option>
-            </select>
-          </div>
-          <div class="col-12">
-            <Label for="hashtag">Hashtag</Label>
-            <input type="text" class="form-control" placeholder="Hashtag" id="hashtag" />
+            <app-tags-chips (newItemEvent)="setTags($event)"></app-tags-chips>
           </div>
         </div>
         <div class="row button-container">
-          <button type="submit" class="btn btn-primary">Rechercher</button>
+          <button pButton type="submit" label="Search" icon="pi pi-search" [loading]="isLoading()" [disabled]="isDisabled()"></button>
         </div>
       </form>
-      <app-tags-chips (newItemEvent)="setTags($event)"></app-tags-chips>
-    </div>
-
-
-    <div class="col-sm-12 col-md-12 col-lg-9 p-9">
-      <div class="tri">
-        <div class="btn-group">
-          <input checked type="radio" class="btn-check" name="options" id="radio1" autocomplete="off"
-            value="date-posted-desc" (click)="sortPhotos($event)">
-          <label class="btn btn-outline-primary p-1" for="radio1">Les plus récentes</label>
-
-          <input type="radio" class="btn-check" name="options" id="radio2" autocomplete="off" value="date-posted-asc"
-            (click)="sortPhotos($event)">
-          <label class="btn btn-outline-primary p-1" for="radio2">Les plus anciennes</label>
-
-          <input type="radio" class="btn-check" name="options" id="radio3" autocomplete="off"
-            value="interestingness-desc" (click)="sortPhotos($event)">
-          <label class="btn btn-outline-primary p-1" for="radio3">Les plus populaires</label>
-
-          <input type="radio" class="btn-check" name="options" id="radio4" autocomplete="off"
-            value="interestingness-asc" (click)="sortPhotos($event)">
-          <label class="btn btn-outline-primary p-1" for="radio4">Les moins populaires</label>
-        </div>
-      </div>
-
-      <app-cards-images [images]="images"></app-cards-images>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-sm-12 col-md-6 color-container">
+      <div *ngIf="isDisabled(); else colorSelectionDefault" class="color color-image">
+        <p-skeleton shape="square" size="20px"></p-skeleton>
+      </div>
+      <ng-template #colorSelectionDefault>
+        <img class="color color-image" src="../../assets/images/clipart4768373.png" alt="no color" (click)="setColor(null)"> 
+      </ng-template>
+      <div class="color-content">
+        <mat-grid-list cols="20" rowHeight="1:1">
+          <mat-grid-tile *ngFor="let color of colors">
+            <div *ngIf="isDisabled(); else colorSelection">
+              <p-skeleton shape="square" size="20px"></p-skeleton>
+            </div>
+            <ng-template #colorSelection>
+              <div class="color" [style.background-color]="color" (click)="setColor(color)"></div>
+            </ng-template>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </div> 
+    </div>
+    <div class="col-sm-12 col-md-6 sort-container">
+      <mat-button-toggle-group name="fontStyle" aria-label="Font Style" value="date-posted-desc">
+        <mat-button-toggle value="date-posted-desc" (change)="sortPhotos($event.value)" [disabled]="isDisabled()">Most recent</mat-button-toggle>
+        <mat-button-toggle value="date-posted-asc" (change)="sortPhotos($event.value)" [disabled]="isDisabled()">Less recent</mat-button-toggle>
+        <mat-button-toggle value="interestingness-desc" (change)="sortPhotos($event.value)" [disabled]="isDisabled()">Most popular </mat-button-toggle>
+        <mat-button-toggle value="interestingness-asc" (change)="sortPhotos($event.value)" [disabled]="isDisabled()">Less popular</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+
+
+  <div *ngIf="images.length === 0; else data">
+    <div class="col-12 lazy-container">
+      <mat-grid-list cols="{{ numberOfCol.length }}" rowHeight="1:1">
+        <mat-grid-tile *ngFor="let card of numberOfCards">
+          <p-skeleton shape="square" size="300px"></p-skeleton>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+  </div>
+  <ng-template #data>
+    <div *ngIf="displayMode; else grid">
+      <app-carousel [images]="images"></app-carousel>
+    </div>
+    <ng-template #grid>
+      <app-cards-images [images]="images" [numberOfRows]="numberOfCol.length" (newItemEvent)="updatenumberOfCol($event)"></app-cards-images>
+    </ng-template>
+  </ng-template>
 </div>

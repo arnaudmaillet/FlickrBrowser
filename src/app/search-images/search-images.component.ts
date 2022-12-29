@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { FlickrService } from '../services/flickr.service';
 import { FormControl, FormGroup } from '@angular/forms';
-import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 
 
@@ -13,90 +12,96 @@ enum Sort {
   INTERESTINGNESS_DESC = 'interestingness-desc',
 }
 
-enum Code_color {
-  RED = '0',
-  BROWN = '1',
-  ORANGE = '2',
-  PINK = '3',
-  YELLOW_GREEN = '4',
-  YELLOW = '5',
-  GREEN = '6',
-  GREEN_BLUE = '7',
-}
-
 @Component({
   selector: 'app-search-images',
   templateUrl: './search-images.component.html',
   styleUrls: ['./search-images.component.css'],
 })
+
 export class SearchImagesComponent implements OnInit {
-  private _keyword: string;
-  private _numberOfImages: number;
-  private _images: any[];
-  private _minDate: Date;
-  private _maxDate: Date;
+
   private _sort: Sort;
-  private _safeMode: string;
   private _tags: string[] = [];
-  private color: Code_color;
-  private isColorEnabled: boolean;
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl('');
   
-
-  maxDatePicker: NgbDateStruct;
-  minDatePicker: NgbDateStruct;
+  images: any[];
+  keyword: string;
+  displayMode: boolean;
+  formMinDate: FormControl;
+  formMaxDate: FormControl;
+  maxDate: Date;
+  minDate: Date;
+  safeMode: string;
   form: FormGroup;
+  numberOfCol: any[];
+  numberOfCards: any[];
+  colors: string[];
+  colorDisabled: string;
+  currentColor: string;
 
   constructor(private flickrService: FlickrService) {
-  }
-
-  ngOnInit(): void {
-    this._keyword = '';
-    this._numberOfImages = 100;
-    this._sort = Sort.DATE_POSTED_DESC;
-    this._images = [];
-    this._minDate = new Date('2000-01-01');
-    this._maxDate = new Date();
-    this.color = Code_color.RED;
-    this.isColorEnabled = false;
-    this._safeMode = 'Restricted';
-    this._tags = [];
-    this.form = new FormGroup({
-      keyword: new FormControl(this._keyword),
-      numberOfImages: new FormControl(this._numberOfImages),
-    });
-
     this.getRecentPhotos();
   }
 
-  get images() {
-    return this._images;
+  ngOnInit(): void {
+    this.keyword = '';
+    this._sort = Sort.DATE_POSTED_DESC;
+    this.images = [];
+    this.minDate = new Date('2000-01-01');
+    this.maxDate = new Date();
+    this.colors = ['red', 'brown', 'orange', 'pink', 'gold', 'yellowgreen', 'green', 'deepSkyBlue', 'blue', 'purple'];
+    this.colorDisabled = 'grey';
+    this.currentColor = null;
+    this.safeMode = 'Restricted';
+    this._tags = [];
+    this.formMinDate = new FormControl(this.minDate);
+    this.formMaxDate = new FormControl(this.maxDate);
+    this.displayMode = false;
+    this.numberOfCol = Array(5).fill(0).map((x,i)=>i);
+    this.numberOfCards = Array(5).fill(0).map((x,i)=>i);
+    this.form = new FormGroup({
+      keyword: new FormControl(this.keyword)
+    });
   }
 
-  get numberOfImages() {
-    return this._numberOfImages;
+  sortPhotos(sortValue: string) {
+    if (this.keyword === '') {
+      alert('Please enter a keyword');
+    } else {
+      this.updateSort(sortValue);
+      this.updateNumberOfCards();
+      this.onSubmit();
+    }
   }
 
-  get maxDate() {
-    return this._maxDate;
+  setColor(color: any) {
+    this.currentColor = color
+    this.onSubmit();
   }
 
-  get minDate() {
-    return this._minDate;
+
+  updatenumberOfCol(number: number) {
+    this.numberOfCol = Array(number).fill(0).map((x,i)=>i);
   }
+
+  updateNumberOfCards() {
+    let cards = this.images.length;
+    this.numberOfCards = Array(cards).fill(0).map((x,i)=>i);
+  }
+
 
   get tags() {
     return this._tags;
   }
 
-  get safeMode() {
-    return this._safeMode;
+  isDisabled(): boolean {
+    return this.keyword === '';
   }
 
-  set keyword(keyword: string) {
-    this._keyword = keyword;
+  isLoading(): boolean {
+    return this.images.length === 0;
   }
 
   setTags(tags: string[]) {
@@ -107,64 +112,63 @@ export class SearchImagesComponent implements OnInit {
     }
   }
 
-  private setMaxDate(maxDate: NgbDateStruct) {
-    if (maxDate === undefined) {
-      this._maxDate = new Date();
+  setMaxDate(date: any) {
+    console.log(date);
+    if (date === undefined) {
+      this.maxDate = new Date();
     }
     else {
-      this._maxDate = new Date(
-        `${maxDate.year}-${maxDate.month}-${maxDate.day}`
-      );
+      this.maxDate = new Date(date);
     }
+    console.log(this.maxDate);
   }
 
-  private setMinDate(minDate: NgbDateStruct) {
-    if (minDate === undefined) {
-      this._minDate = new Date('2000-01-01');
+  setMinDate(date: any) {
+    console.log(date);
+    if (date === undefined) {
+      this.minDate = new Date('2000-01-01');
     }
     else {
-      this._minDate = new Date(
-        `${minDate.year}-${minDate.month}-${minDate.day}`
-      );
+      this.minDate = new Date(date);
     }
+    console.log(this.minDate);
   }
 
-  setNumberOfImages(event: any) {
-    this._numberOfImages = event.target.value;
-    this.searchPhotos();
-  }
 
-  sortPhotos(event: any) {
-    this.updateSort(event.target.value);
-    if (this._keyword.length > 0) {
-      this.searchPhotos();
+  getDisplayMode() {
+    if (this.displayMode) {
+      return 'Slider';
     } else {
-      this.getRecentPhotos();
+      return 'Grid';
     }
   }
 
   private async searchPhotos() {
     await lastValueFrom(
       this.flickrService.searchPhotos(
-        this._keyword,
-        this._numberOfImages,
-        this._maxDate,
-        this._minDate,
-        this._safeMode,
+        this.keyword,
+        this.maxDate,
+        this.minDate,
+        this.safeMode,
         this._tags,
         this._sort,
+        this.getCodeColor(this.currentColor)
       )
     ).then((res: any) => {
-      this._images = res;
+      this.images = res;
     });
   }
 
   private async getRecentPhotos() {
     await lastValueFrom(
-      this.flickrService.getRecentPhotos(this._numberOfImages)
+      this.flickrService.getRecentPhotos()
     ).then((res: any) => {
-      this._images = res;
+      this.images = res;
     });
+  }
+
+  updateKeyword(event: any) {
+    this.keyword = event.target.value;
   }
 
   private updateSort(sort: string) {
@@ -187,52 +191,55 @@ export class SearchImagesComponent implements OnInit {
     }
   }
 
+  getCodeColor(color: any) {
+    switch (color) {
+      case 'red':
+        return '0';
+      case 'brown':
+        return '1';
+      case 'orange':
+        return '2';
+      case 'pink':
+        return '3';
+      case 'yellowgreen':
+        return '4';
+      case 'gold':
+        return '5';
+      case 'green':
+        return '6';
+      case 'deepSkyBlue':
+        return '7';
+      case 'blue':
+        return '8';
+      case 'purple':
+        return '9';
+      default:
+        return null;
+    }
+  }
+
   setSafeMode(event: any) {
-    this._safeMode = event.target.value;
+    this.safeMode = event.target.value;
     this.searchPhotos();
   }
 
   onSubmit(): void {
-    this._keyword = this.form.value.keyword;
-    this._numberOfImages = this.form.value.numberOfImages;
-    this.setMinDate(this.minDatePicker);
-    this.setMaxDate(this.maxDatePicker);
-
-    if (this._keyword === undefined || this._keyword.length === 0) {
+    this.updateNumberOfCards();
+    if (this.keyword === undefined || this.keyword.length === 0) {
       alert('Veuillez saisir un mot clé');
     } else
     {
-      if (this._minDate < this._maxDate) {
-        if (this._keyword.toLowerCase().includes('f50')) {
-          this._keyword = 'twingo';
+      if (this.minDate < this.maxDate) {
+        if (this.keyword.toLowerCase().includes('f50')) {
+          this.keyword = 'twingo';
         }
         this.searchPhotos();
+        if (this.images.length === 0) {
+          alert('Aucune photo trouvée');
+        }
       } else {
         alert('La date de début doit être inférieure à la date de fin');
       }
-    }
-  }
-
-  private findColor(color: string) {
-    switch (color) {
-      case 'Red':
-        return Code_color.RED;
-      case 'Brown':
-        return Code_color.BROWN;
-      case 'Orange':
-        return Code_color.ORANGE;
-      case 'Pink':
-        return Code_color.PINK;
-      case 'Yellow Green':
-        return Code_color.YELLOW_GREEN;
-      case 'Yellow':
-        return Code_color.YELLOW;
-      case 'Green':
-        return Code_color.GREEN;
-      case 'Green Blue':
-        return Code_color.GREEN_BLUE;
-      default:
-        return Code_color.RED;
     }
   }
 }

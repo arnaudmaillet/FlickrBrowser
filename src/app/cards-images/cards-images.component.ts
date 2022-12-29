@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CardModalComponent } from '../card-modal/card-modal.component';
 
@@ -9,11 +9,17 @@ import { CardModalComponent } from '../card-modal/card-modal.component';
 })
 export class CardsImagesComponent implements OnInit {
 
+  @Output() newItemEvent = new EventEmitter<number>();
   @Input() images: any[] = [];
+  @Input() numberOfRows: number = 5;
   constructor(private matDialog: MatDialog) {}
 
   ngOnInit(): void {
     
+  }
+
+  getNumberOfRows(value: number) {
+    this.newItemEvent.emit(value);
   }
 
   displayTitle(title: string){
@@ -28,6 +34,11 @@ export class CardsImagesComponent implements OnInit {
     } else {
       return description;
     }
+  }
+
+  updateRowsDisplay(event: any){
+    this.numberOfRows = event.value;
+    this.getNumberOfRows(event.value);
   }
 
   openDialog(image: any){

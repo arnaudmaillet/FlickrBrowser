@@ -83,29 +83,31 @@ export class FlickrService {
 
   searchPhotos(
     searchText: string,
-    perPage: number,
     maxDate: Date,
     minDate: Date,
     safeMode: string,
     tags: string[],
     sort: string,
+    color: string | null
   ): Observable<Object> {
     let stringTags = this.parseTags(tags);
     let tagsParams = stringTags.length > 0 ? `&tags=${stringTags}` : '';
-    const args = `&${this._apiKey}&text=${searchText}&color_codes=e&sort=${sort}&min_taken_date=${minDate.toISOString().substring(0, 10)}&max_taken_date=${maxDate.toISOString().substring(0, 10)}${tagsParams}&safe_search=${safeMode}&per_page=${perPage}&${this._format}`;
+    let colorParams = color !== null ? `&color_codes=${color}` : '';
+    const args = `&${this._apiKey}&text=${searchText}${colorParams}&sort=${sort}&min_upload_date=${minDate.toISOString().substring(0, 10)}&max_upload_date=${maxDate.toISOString().substring(0, 10)}${tagsParams}&safe_search=${safeMode}&${this._format}`;
+    console.log(`${args}`);
     return this.http
       .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.SEARCH}${args}`)
       .pipe(
         map(async (res: FlickrResponse) => {
           const photos: any[] = [];
           res.photos?.photo?.forEach(async (photo: any) => {
-            await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
+            await lastValueFrom(this.getPhotoInfo(photo.id)).then(
               async (resInfo: any) => {
                 await lastValueFrom(this.getLocation(photo.id)).then(
                   async (resLocation: any) => {
                     await lastValueFrom(this.getComments(photo.id)).then(
                       async (resComments: any) => {
-                        await lastValueFrom(this.getUserPhotos(photo.owner, perPage, safeMode)).then(
+                        await lastValueFrom(this.getUserPhotos(photo.owner, safeMode)).then(
                           async (resUserPhotos: any) => {
                             photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resComments, resUserPhotos));
                           }
@@ -122,8 +124,8 @@ export class FlickrService {
       );
   }
 
-  getRecentPhotos(perPage: number): Observable<Object> {
-    const args = `&${this._apiKey}&${this._format}&per_page=${perPage}`;
+  getRecentPhotos(): Observable<Object> {
+    const args = `&${this._apiKey}&${this._format}`;
 
     return this.http
       .get<FlickrResponse>(`${this._apiUrl}${FlickrMethod.GET_RECENT}${args}`)
@@ -131,13 +133,13 @@ export class FlickrService {
         map(async (res: FlickrResponse) => {
           const photos: any[] = [];
           res.photos.photo.forEach(async (photo) => {
-            await lastValueFrom(this.getPhotoInfo(photo.id, perPage)).then(
+            await lastValueFrom(this.getPhotoInfo(photo.id)).then(
               async (resInfo: any) => {
                 await lastValueFrom(this.getLocation(photo.id)).then(
                   async (resLocation: any) => {
                     await lastValueFrom(this.getComments(photo.id)).then(
                       async (resComments: any) => {
-                        await lastValueFrom(this.getUserPhotos(photo.owner, 50, "Restricted")).then(
+                        await lastValueFrom(this.getUserPhotos(photo.owner, "Restricted")).then(
                           async (resUserPhotos: any) => {
                             photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resComments, resUserPhotos));
                           }
@@ -158,8 +160,8 @@ export class FlickrService {
     return this.http.get(`${this._apiUrl}${FlickrMethod.GET_LOCATION}${args}`);
   }
 
-  private getUserPhotos(userId: string, perPage: number, safeMode: string): Observable<Object> {
-    const args = `&${this._apiKey}&user_id=${userId}&safe_search=${safeMode}&per_page=${perPage}&${this._format}`;
+  private getUserPhotos(userId: string, safeMode: string): Observable<Object> {
+    const args = `&${this._apiKey}&user_id=${userId}&safe_search=${safeMode}&${this._format}`;
     return this.http.get(`${this._apiUrl}${FlickrMethod.GET_USER_PHOTOS}${args}`);
   }
 
@@ -168,8 +170,8 @@ export class FlickrService {
     return this.http.get(`${this._apiUrl}${FlickrMethod.GET_SIZES}${args}`);
   }
 
-  private getPhotoInfo(photoId: string, perPage: number): Observable<Object> {
-    const args: string = `&${this._apiKey}&photo_id=${photoId}&per_page=${perPage}&format=json&nojsoncallback=1`;
+  private getPhotoInfo(photoId: string): Observable<Object> {
+    const args: string = `&${this._apiKey}&photo_id=${photoId}&format=json&nojsoncallback=1`;
     return this.http.get(`${this._apiUrl}${FlickrMethod.GET_INFO}${args}`);
   }
 
@@ -208,6 +210,7 @@ export class FlickrService {
   }
 
   private instanciatePhoto(photo: any, resInfo: any, resLocation:any, resComment: any, resUserPhotos): any {
+    let dateTaken: string = resInfo.photo.dates.taken;
     if (resInfo.photo.owner) {
       let avatarUrl: string | undefined = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${resInfo.photo.owner?.nsid}.jpg`;
       return {

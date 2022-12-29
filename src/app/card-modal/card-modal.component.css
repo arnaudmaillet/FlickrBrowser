@@ -1,3 +1,7 @@
+::ng-deep .custom-dialog > mat-dialog-container {
+  background-color: transparent;
+}
+
 ::ng-deep.mat-dialog-container {
   padding: 0px;
   overflow-x: hidden;
@@ -19,6 +23,7 @@
 
 .information {
   padding: 20px;
+  background-color: transparent;
 }
 
 .information-header {
@@ -57,8 +62,20 @@
   padding: 20px 10px 0 10px;
 }
 
+.information-content-description-content {
+  text-align: justify;
+}
+
+.photos-title {
+  padding: 20px 20px 20px 20px;
+  background-color: #f5f5f5;
+  font-size: 18px;
+  text-align: center;
+}
+
 .comment-content {
   padding: 0 10px;
+  text-align: justify;
 }
 
 .comment-header {
@@ -75,11 +92,20 @@
 
 .comment-header div h2{
   margin: auto;
-  padding: 0 5px;
+  padding: 0 10px;
 }
 
 .tabs {
   max-width: 600px;
+}
+
+.information-location {
+  display: flex;
+  padding: 20px 0 0 10px;
+}
+
+.information-location p {
+  margin-top: 5px;
 }
 
 ::ng-deep .mat-list .mat-list-item .mat-line{

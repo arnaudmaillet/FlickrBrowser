@@ -48,9 +48,19 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 
+import {CarouselModule} from 'primeng/carousel';
+import {ButtonModule} from 'primeng/button';
+import {ToastModule} from 'primeng/toast';
+import {CarouselComponent} from './carousel/carousel.component';
+import {CardModule} from 'primeng/card';
+import {SkeletonModule} from 'primeng/skeleton';
+import {SelectButtonModule} from 'primeng/selectbutton';
+import {TooltipModule} from 'primeng/tooltip';
+import {AnimateModule} from 'primeng/animate';
+
 
 @NgModule({
-  declarations: [AppComponent, SearchImagesComponent, CardModalComponent, CardsImagesComponent, TagsChipsComponent],
+  declarations: [AppComponent, SearchImagesComponent, CardModalComponent, CardsImagesComponent, TagsChipsComponent, CarouselComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -94,6 +104,14 @@ import {MatTreeModule} from '@angular/material/tree';
     MatToolbarModule,
     MatTooltipModule,
     MatTreeModule,
+    CarouselModule,
+    ButtonModule,
+    ToastModule,
+    SkeletonModule,
+    CardModule,
+    SelectButtonModule,
+    TooltipModule,
+    AnimateModule
   ],
   providers: [],
   bootstrap: [AppComponent],
