@@ -16,6 +16,8 @@ export interface FlickrPhoto {
   farm: string;
   id: string;
   title: string;
+  height: string;
+  width: string;
   secret: string;
   server: string;
   location: string;
@@ -105,13 +107,17 @@ export class FlickrService {
               async (resInfo: any) => {
                 await lastValueFrom(this.getLocation(photo.id)).then(
                   async (resLocation: any) => {
-                    await lastValueFrom(this.getComments(photo.id)).then(
-                      async (resComments: any) => {
-                        await lastValueFrom(this.getUserPhotos(photo.owner, safeMode)).then(
-                          async (resUserPhotos: any) => {
-                            photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resComments, resUserPhotos));
+                    await lastValueFrom(this.getPhotoSizes(photo.id)).then(
+                      async (resSizes: any) => {
+                        await lastValueFrom(this.getComments(photo.id)).then(
+                          async (resComments: any) => {
+                            await lastValueFrom(this.getUserPhotos(photo.owner, safeMode)).then(
+                              async (resUserPhotos: any) => {
+                                photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resSizes, resComments, resUserPhotos));
+                              }
+                            ); 
                           }
-                        ); 
+                        );
                       }
                     );
                   }
@@ -137,11 +143,15 @@ export class FlickrService {
               async (resInfo: any) => {
                 await lastValueFrom(this.getLocation(photo.id)).then(
                   async (resLocation: any) => {
-                    await lastValueFrom(this.getComments(photo.id)).then(
-                      async (resComments: any) => {
-                        await lastValueFrom(this.getUserPhotos(photo.owner, "Restricted")).then(
-                          async (resUserPhotos: any) => {
-                            photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resComments, resUserPhotos));
+                    await lastValueFrom(this.getPhotoSizes(photo.id)).then(
+                      async (resSizes: any) => {
+                        await lastValueFrom(this.getComments(photo.id)).then(
+                          async (resComments: any) => {
+                            await lastValueFrom(this.getUserPhotos(photo.owner, "Restricted")).then(
+                              async (resUserPhotos: any) => {
+                                photos.push(this.instanciatePhoto(photo, resInfo, resLocation, resSizes, resComments, resUserPhotos));
+                              }
+                            );
                           }
                         );
                       }
@@ -209,8 +219,7 @@ export class FlickrService {
     return username;
   }
 
-  private instanciatePhoto(photo: any, resInfo: any, resLocation:any, resComment: any, resUserPhotos): any {
-    let dateTaken: string = resInfo.photo.dates.taken;
+  private instanciatePhoto(photo: any, resInfo: any, resLocation:any, resSizes:any, resComment: any, resUserPhotos): any {
     if (resInfo.photo.owner) {
       let avatarUrl: string | undefined = `http://farm${photo.farm}.staticflickr.com/${photo.server}/buddyicons/${resInfo.photo.owner?.nsid}.jpg`;
       return {
@@ -226,6 +235,8 @@ export class FlickrService {
         server: photo.server,
         secret: photo.secret,
         farm: photo.farm,
+        height: resSizes.sizes.size.find((size: any) => size.label === 'Original')?.height,
+        width: resSizes.sizes.size.find((size: any) => size.label === 'Original')?.width,
         comments: resComment.comments.comment ? this.getAvatarUrl(resComment.comments.comment) : undefined,
         dates: {
           taken: new Date(resInfo.photo.dates.taken),

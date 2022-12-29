@@ -42,6 +42,9 @@
                 <h2>Description</h2>
                 <p class="information-content-description-content" [innerHTML]="getDescription(image.description)"></p>
               </div>
+              <div *ngIf="image.height !== undefined && image.width !== undefined" class="information-content-size">
+                <p>Image size : {{ image.width }} x {{ image.height }} px</p>
+              </div>
               <div class="information-content-tags">
                 <div class="tags">
                   <div [ngStyle]="{'margin' : isTagsEmpty(image.tags) === '' ? '0px' : '30px 0px 10px 0px'}" [innerHTML]="isTagsEmpty(image.tags)"></div>

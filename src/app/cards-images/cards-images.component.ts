@@ -15,7 +15,7 @@ export class CardsImagesComponent implements OnInit {
   constructor(private matDialog: MatDialog) {}
 
   ngOnInit(): void {
-    
+    console.log(this.images);
   }
 
   getNumberOfRows(value: number) {
