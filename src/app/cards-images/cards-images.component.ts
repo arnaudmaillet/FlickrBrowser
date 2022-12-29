@@ -45,7 +45,8 @@ export class CardsImagesComponent implements OnInit {
     this.matDialog.open(CardModalComponent, {
       data: image,
       autoFocus: false,
-      maxHeight: '95vh'
+      maxHeight: '95vh',
+      width: '70%'
     });
   }
 }

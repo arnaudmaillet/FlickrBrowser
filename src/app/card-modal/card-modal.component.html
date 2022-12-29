@@ -59,7 +59,7 @@
           <div class="photos-title">Author's Photos</div>
             <mat-grid-list cols="3" rowHeight="1:1">
               <mat-grid-tile *ngFor="let photo of image.ownerInfos.photos">
-                <img src="{{ photo.url }}" alt="{{ photo.title }}" onerror="this.onerror=null; this.src='../../assets/images/noImage.jpg'"/>
+                <img class = 'author_images' src="{{ photo.url }}" alt="{{ photo.title }}" onerror="this.onerror=null; this.src='../../assets/images/noImage.jpg'"/>
               </mat-grid-tile>
             </mat-grid-list>
           </div>
