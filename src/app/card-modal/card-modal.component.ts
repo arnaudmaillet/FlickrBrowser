@@ -14,7 +14,9 @@ export class CardModalComponent implements OnInit {
 
 
   ngOnInit(): void {
-    console.log(this.image);
+    if (this.image.title === '' || this.image.title === 'undefined') {
+      this.image.title = "No title";
+    }
   }
 
   getDateToString(date: string){
@@ -60,6 +62,12 @@ export class CardModalComponent implements OnInit {
     } else {
       return `Tags :`;
     }
+  }
+
+  // get image by same owner.name
+  getImagesByOwnerName(ownerName: string) {
+    console.log(ownerName);
+    return this.image.filter(image => image.ownername === ownerName);
   }
 }
 

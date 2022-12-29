@@ -1,3 +1,4 @@
+
 ::ng-deep .custom-dialog > mat-dialog-container {
   background-color: transparent;
 }
@@ -5,17 +6,6 @@
 ::ng-deep.mat-dialog-container {
   padding: 0px;
   overflow-x: hidden;
-}
-
-.avatar {
-  height: 50px;
-  width: 50px;
-  border-radius: 50%;
-}
-
-.owner {
-  color: grey;
-}
 
 .mat-dialog-content {
   max-height: initial;

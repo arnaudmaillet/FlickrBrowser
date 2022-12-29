@@ -12,6 +12,7 @@ enum Sort {
   INTERESTINGNESS_DESC = 'interestingness-desc',
 }
 
+
 @Component({
   selector: 'app-search-images',
   templateUrl: './search-images.component.html',
