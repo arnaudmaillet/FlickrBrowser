@@ -1,15 +1,88 @@
-<!-- modal with title image description, owner close button -->
-<div class="full-modal">
-  <div class="modal-header">
-      <img class="image-owner" src="{{ image.owner.avatar }}" title="{{ image.owner.avatar }}/" />
-      <h5 class="modal-title" id="image-title">{{ image.title }}</h5>
-      <button class="btn-close" (click)="closeDialog()"></button>
-  </div>
-  <div class="body">
-    <div class="modal-body">
-      <img class="body-image" src="{{ image.url }}" title="{{ image.title }}" />
-      <p class="owner">Photo by {{ image.owner.name }} as {{ image.owner.username }}</p>
-      <p class="description">{{ image.description }}</p>
-    </div>
-  </div>
+<div>
+<img class="card-img" src="{{ image.url }}" title="{{ image.title }}" />
+</div>
+<div class="modal-body" mat-dialog-content>
+    <mat-tab-group mat-stretch-tabs class="tabs">
+      <mat-tab label="Information">
+        <div class="container information">
+          <div class="row">
+            <div class="information-header">
+              <div class="information-header-user">
+                <img
+                class="avatar"
+                src="{{ image.ownerInfos.avatar }}"
+                title="{{ image.ownerInfos.avatar }}/"
+                onerror="this.onerror=null; this.src='../../assets/images/user-icon-2098873_1280.png'"
+                />
+                <h2>{{ image.ownerInfos.username }}</h2>
+              </div>
+              <div class="information-header-date">
+                <div class="information-header-date-views">
+                  <mat-icon>visibility</mat-icon>
+                  <h2>{{ image.views }}</h2>
+                </div>
+                <div>{{ image.datesFormatted.posted }}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="image.location" class="row">
+            <div class="information-location">
+              <mat-icon> location_on</mat-icon>
+              <p>
+                <span *ngIf="image.location.neighbourhood._content && image.location.neighbourhood._content !== ''">{{ image.location.neighbourhood._content}}, </span>
+                <span *ngIf="image.location.county._content && image.location.county._content !== ''">{{ image.location.county._content}}, </span>
+                <span *ngIf="image.location.region._content && image.location.region._content !==''">{{ image.location.region._content}}, </span>
+                <span *ngIf="image.location.country._content && image.location.country._content !== ''">{{ image.location.country._content}}</span>
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="information-content">
+              <div class="information-content-description">
+                <h2>Description</h2>
+                <p class="information-content-description-content" [innerHTML]="getDescription(image.description)"></p>
+              </div>
+              <div class="information-content-tags">
+                <div class="tags">
+                  <div [ngStyle]="{'margin' : isTagsEmpty(image.tags) === '' ? '0px' : '30px 0px 10px 0px'}" [innerHTML]="isTagsEmpty(image.tags)"></div>
+                  <mat-chip-list>
+                    <mat-chip *ngFor="let tag of image.tags">
+                      {{tag._content}}
+                    </mat-chip>
+                  </mat-chip-list>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="photos">
+          <div class="photos-title">Author's Photos</div>
+            <mat-grid-list cols="3" rowHeight="1:1">
+              <mat-grid-tile *ngFor="let photo of image.ownerInfos.photos">
+                <img src="{{ photo.url }}" alt="{{ photo.title }}" onerror="this.onerror=null; this.src='../../assets/images/noImage.jpg'"/>
+              </mat-grid-tile>
+            </mat-grid-list>
+          </div>
+      </mat-tab>
+      <mat-tab label="Comments" [disabled]="isCommentDisabled(image.comments)">
+        <mat-list *ngFor="let comment of image.comments">
+          <mat-list-item>
+            <div class="container">
+              <div class="comment-header">
+                <div>
+                  <img
+                  class="avatar"
+                  src="{{ comment.avatarUrl }}"
+                  title="{{ comment.avatarUrl }}/"/>
+                  <h2>{{ comment.authorname }}</h2>
+                </div>
+                <p>{{ getDateToString(comment.datecreate) }}</p>
+              </div>
+              <p class="comment-content" [innerHTML]="comment._content"></p>
+            </div>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+        </mat-list>
+      </mat-tab>
+    </mat-tab-group>
 </div>
