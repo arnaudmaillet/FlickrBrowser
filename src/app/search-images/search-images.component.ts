@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { FlickrService } from '../services/flickr.service';
 import { FormControl, FormGroup } from '@angular/forms';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
-
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import Swal from 'sweetalert2'
 
 enum Sort {
   DATE_POSTED_ASC = 'date-posted-asc',
@@ -26,7 +26,7 @@ export class SearchImagesComponent implements OnInit {
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl('');
-  
+
   images: any[];
   keyword: string;
   displayMode: boolean;
@@ -60,8 +60,8 @@ export class SearchImagesComponent implements OnInit {
     this.formMinDate = new FormControl(this.minDate);
     this.formMaxDate = new FormControl(this.maxDate);
     this.displayMode = false;
-    this.numberOfCol = Array(5).fill(0).map((x,i)=>i);
-    this.numberOfCards = Array(5).fill(0).map((x,i)=>i);
+    this.numberOfCol = Array(5).fill(0).map((x, i) => i);
+    this.numberOfCards = Array(5).fill(0).map((x, i) => i);
     this.form = new FormGroup({
       keyword: new FormControl(this.keyword)
     });
@@ -84,12 +84,12 @@ export class SearchImagesComponent implements OnInit {
 
 
   updatenumberOfCol(number: number) {
-    this.numberOfCol = Array(number).fill(0).map((x,i)=>i);
+    this.numberOfCol = Array(number).fill(0).map((x, i) => i);
   }
 
   updateNumberOfCards() {
     let cards = this.images.length;
-    this.numberOfCards = Array(cards).fill(0).map((x,i)=>i);
+    this.numberOfCards = Array(cards).fill(0).map((x, i) => i);
   }
 
 
@@ -227,9 +227,13 @@ export class SearchImagesComponent implements OnInit {
   onSubmit(): void {
     this.updateNumberOfCards();
     if (this.keyword === undefined || this.keyword.length === 0) {
-      alert('Veuillez saisir un mot clé');
-    } else
-    {
+      // alert('Veuillez saisir un mot clé');
+      Swal.fire(
+        'Warning !',
+        'Please enter a keyword ! without keyword, the search will be done on the most recent photos',
+      );
+      this.searchPhotos();
+    } else {
       if (this.minDate < this.maxDate) {
         if (this.keyword.toLowerCase().includes('f50')) {
           this.keyword = 'twingo';
