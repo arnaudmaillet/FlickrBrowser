@@ -18,7 +18,8 @@
     </div>
     <div class="col-sm-12 col-md-8 col-lg-8">
       <form class="form-input" [formGroup]="form" (ngSubmit)="onSubmit()">
-        <h2>Recherchez des images</h2>
+        <p *ngIf="isDisabled();" style="color: rgba(124,97,176, 0.7); margin: 0; font-size: 12px;font-weight: 500;">Please give a keyword before search images</p>
+        <h2>Search images</h2>
         <div class="row">
           <div class="col-sm-12 col-md-6">
             <mat-form-field appearance="outline">

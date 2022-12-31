@@ -240,7 +240,11 @@ export class SearchImagesComponent implements OnInit {
         }
         this.searchPhotos();
       } else {
-        alert('La date de début doit être inférieure à la date de fin');
+        // alert('La date de début doit être inférieure à la date de fin');
+        Swal.fire(
+          'Warning !',
+          'Start date must be less than end date',
+        );
       }
     }
   }
