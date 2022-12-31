@@ -202,9 +202,9 @@ export class SearchImagesComponent implements OnInit {
         return '2';
       case 'pink':
         return '3';
-      case 'yellowgreen':
-        return '4';
       case 'gold':
+        return '4';
+      case 'yellowgreen':
         return '5';
       case 'green':
         return '6';
